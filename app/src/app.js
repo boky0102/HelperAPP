@@ -41,7 +41,10 @@ function App (){
     const [newUser, setNewUser] = useState({
         username: "",
         password: "",
-        passwordConfirm: ""
+        passwordConfirm: "",
+        streetAndNum: "",
+        city: "",
+        country: ""
     })
 
     
@@ -116,6 +119,28 @@ function App (){
                     passwordConfirm: value
                 }
             }
+
+            else if(name === "streetAndNum"){
+                return{
+                    ...prevUser,
+                    streetAndNum: value
+                }
+            }
+
+            else if(name === "city"){
+                return{
+                    ...prevUser,
+                    city: value
+                }
+            }
+
+            else if(name === "country"){
+                return{
+                    ...prevUser,
+                    country: value
+                }
+            }
+            
         })
     }
 
@@ -123,7 +148,10 @@ function App (){
 
         const data = {
             username: newUser.username,
-            password: newUser.password
+            password: newUser.password,
+            streetAndNum: newUser.streetAndNum,
+            city: newUser.city,
+            country: newUser.country
         }
         
         const url ="http://localhost:3001/register";

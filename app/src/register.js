@@ -20,6 +20,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import logo from './static/logo.png'
 
 function Copyright() {
   return (
@@ -76,14 +77,15 @@ export default function Register(props) {
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
+            <img src={logo}></img>
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} onSubmit={props.handleRegSubmit} noValidate>
+          <form className={classes.form} onSubmit={props.handleRegSubmit} >
             <TextField
               onChange={props.handleChangeRegister}
+              required
               variant="outlined"
               margin="normal"
               required
@@ -95,6 +97,7 @@ export default function Register(props) {
               autoFocus
             />
             <TextField
+              required
               onChange={props.handleChangeRegister}
               variant="outlined"
               margin="normal"
@@ -108,6 +111,7 @@ export default function Register(props) {
             />
             
             <TextField
+              required
               onChange={props.handleChangeRegister}
               variant="outlined"
               margin="normal"
@@ -119,6 +123,50 @@ export default function Register(props) {
               id="password"
               autoComplete="current-password"
             />
+
+            <TextField
+              required
+              onChange={props.handleChangeRegister}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="streetAndNum"
+              label="Street and number"
+              type="text"
+              id="password"
+              autoComplete="current-password"
+            />
+
+            <TextField
+              required
+              onChange={props.handleChangeRegister}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="city"
+              label="City"
+              type="text"
+              id="password"
+              autoComplete="current-password"
+            />
+
+            <TextField
+              required
+              onChange={props.handleChangeRegister}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="country"
+              label="Country"
+              type="text"
+              id="password"
+              autoComplete="current-password"
+            />
+
+
             
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

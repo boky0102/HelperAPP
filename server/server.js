@@ -71,7 +71,13 @@ const userSchema = new mongoose.Schema({
     userName: String,
     password: String,
     dateCreated: String,
-    friends: String
+    streetAndNum: String,
+    city: String,
+    country: String,
+    coordinates: {
+        x: Number,
+        y: Number
+    }
 
 })
 
@@ -200,42 +206,16 @@ app.get("/tajna", [auth.isAuth], (req,res) => {
     
 })
 
-app.get("/find-adress/:adress", (req,res) => {
-    const adress = req.params.adress;
-    const geoApiKey = process.env.GEO_CODE;
 
-    const url ='https://app.geocodeapi.io/api/v1/autocomplete?apikey='+ geoApiKey +'&text='+ adress + '&size=1' + '&layers=address';
-    
-    axios.get(url)
-    .then((response) => {
-        console.log(response.data.features);
-
-        const labelArray = [];
-
-        const adressData = response.data.features;
-        adressData.forEach((adress) => {
-            console.log("ADRESA :", adress);
-            labelArray.push(adress.properties.label);
-        })
-        
-        res.send(labelArray);
-    
-    }).catch((err) => {
-        res.send("Not found");
-    })
-
-})
 
 
 app.post("/newJob", upload.single("productImage") ,(req,res) => {
 
-    console.log(req.file);
-    console.log(req.body);
+
 
     const imgPathPretty = req.file.path.replace("\\", "/");
 
-    console.log("Ugly :", req.file.path);
-    console.log("Pretty :", imgPathPretty)
+    
 
     const newJob = new Job({
         username: req.body.username,
@@ -287,24 +267,36 @@ app.post("/newJob", upload.single("productImage") ,(req,res) => {
     
 })
 
-app.get("/find/:title?&:category?&:distance?", (req,res) => {
+app.get("/find/:title&:category&:distance", (req,res) => {
 
     console.log(req.params.title);
     console.log(req.params.category);
-    console.log(req.params.deadline);
     console.log(req.params.distance);
 
     const jobsArray = [];
 
-    if(req.params.title != "?"){
-        Job.find({title: /^/},(err, jobs) => {
-            if(!err){
-                console.log(jobs);
-            } else{
-                console.log("Error ...", err);
-            }
+    if(req.params.title === "none"){
+
+        if(req.params.category === "none" && req.params.distance === "none"){
+            Job.find({}, (err, jobs) => {
+                res.send(jobs)
+            })
+
+        }
+
+        else if(req.params.category !== "none" && req.params.distance === "none"){
+            Job.find({category: req.params.category}, (err, jobs) => {
+                res.send(jobs);
+            })
+        }
+
+        else if(req.params.category !== "none" && req.params.distance !== "none"){
+
             
-        })
+            axios.get()
+        }
+
+
 
     }
 
@@ -312,7 +304,7 @@ app.get("/find/:title?&:category?&:distance?", (req,res) => {
 
 
 
-    res.status(200).send();
+    
 })
     
 
