@@ -81,7 +81,7 @@ export default function Login(props) {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Username"
               name="username"
               autoComplete="email"
               autoFocus

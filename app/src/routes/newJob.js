@@ -459,7 +459,7 @@ function NewJob(){
                 <Grid container item direction="row">
                     <Grid item>
                         <Box my={2}>
-                            <Button disabled={loading || jobCreated} color="secondary" type="submit"  size="large" variant="contained" endIcon={<SendIcon/>}>
+                            <Button disabled={loading || jobCreated || imgSrc==""} color="secondary" type="submit"  size="large" variant="contained" endIcon={<SendIcon/>}>
                                 POST JOB
                             </Button>
                         </Box>
@@ -476,6 +476,7 @@ function NewJob(){
                     <Box>
                         {wrongAdress && <Typography variant="h6"> Wrong address, try again </Typography>}
                         {jobCreated && <Typography variant="h6"> Job succesfully created </Typography>}
+                        
                     </Box>
 
                 </Grid>

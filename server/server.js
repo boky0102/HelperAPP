@@ -69,6 +69,7 @@ mongoose.connect('mongodb://localhost/messUsersDB', {useNewUrlParser: true, useU
 
 const userSchema = new mongoose.Schema({
     userName: String,
+    firstAndLastName: String,
     password: String,
     dateCreated: String,
     streetAndNum: String,
@@ -135,30 +136,77 @@ app.post("/register", (req,res) =>{
     const reqUsername = req.body.username;
     const reqPassword = req.body.password;
 
-    console.log(reqPassword, reqUsername);
+    console.log(req.body);
+
+    
 
     bcrypt.hash(reqPassword, 10 , (err, hash) => {
         User.findOne({userName: reqUsername}, (err, user) => {
             if(err){
-            res.send(err);
+                res.send(err);
+                console.log("Tu zapelo");
             } else if(user){
-            res.send("User exists");
-            } else{
-            const hashedPassword = hash;
-            console.log(hashedPassword);
+                res.send("User exists");
+                console.log("Zapelo 2");
+            } else if(!user){
+                const hashedPassword = hash;
+                
+                
+                const newUser = new User({
+                userName: reqUsername,
+                password: hashedPassword,
+                dateCreated: new Date()
+                });
+
+                const url = 'https://wft-geo-db.p.rapidapi.com/v1/geo/cities';
+
+                var options = {
+                method: 'GET',
+                params: {limit: '1', namePrefix: req.body.city},
+                headers: {
+                    'x-rapidapi-key': process.env.RAPID_API,
+                    'x-rapidapi-host': 'wft-geo-db.p.rapidapi.com'
+                }
+                };
+
+                axios.get(url,options)
+                .then((response) => {
+
+                    const data = response.data.data;
             
-            const newUser = new User({
-            userName: reqUsername,
-            password: hashedPassword,
-            dateCreated: new Date()
-            });
-            
-            newUser.save();
-            console.log("New user created");
-            res.send("OK");
-            
-            }
-            })
+
+                    if(data.length === 1){
+                        console.log("DOBAR")
+                        const x = data[0].latitude;
+                        const y = data[0].longitude;
+
+                        console.log(hash);
+
+                        newUser.coordinates.x = x;
+                        newUser.coordinates.y = y;
+                        
+                        newUser.streetAndNum = req.body.streetAndNum;
+                        newUser.city = req.body.city;
+                        newUser.country = req.body.country;
+                        
+                        newUser.save();
+
+                        res.send("OK")
+                        }
+                        else{
+                            console.log("NEDOBAR")
+                            res.status(400).send();
+                        }
+
+                })
+                .catch(console.log("Bad request"));
+
+                
+                
+                
+                
+                }
+                })
     })
     
 }
@@ -176,7 +224,8 @@ app.post("/login", (req,res) => {
         } else if (user){
             bcrypt.compare(reqPassword, user.password, (error, same) => {
                 if(err){
-                    res.send(err);
+                    console.log(err);
+                    
                 } else{
                     if(same){
                         let token = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
@@ -193,7 +242,10 @@ app.post("/login", (req,res) => {
                 }}
                 
             })
+        } else if(!user){
+            res.status(401).send();
         }
+
     })
 
     
@@ -267,11 +319,12 @@ app.post("/newJob", upload.single("productImage") ,(req,res) => {
     
 })
 
-app.get("/find/:title&:category&:distance", (req,res) => {
+app.get("/find/:title&:category&:distance&:username", (req,res) => {
 
     console.log(req.params.title);
     console.log(req.params.category);
     console.log(req.params.distance);
+    console.log(req.params.username);
 
     const jobsArray = [];
 

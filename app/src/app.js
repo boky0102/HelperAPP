@@ -8,7 +8,7 @@ import {
     Route,
     Redirect
   } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import axios from "axios";
 
@@ -44,7 +44,8 @@ function App (){
         passwordConfirm: "",
         streetAndNum: "",
         city: "",
-        country: ""
+        country: "",
+        firstAndLastName: ""
     })
 
     
@@ -74,7 +75,12 @@ function App (){
         })
     }
 
-    checkCookie();
+    useEffect(() => {
+        checkCookie();
+        console.log("Auth :",isAuthenticated);
+    },[]);
+
+    
 
     function handleChangeLogin(event){
         setUsername((prevUser) => {
@@ -141,11 +147,21 @@ function App (){
                 }
             }
             
+            else if(name === "firstAndLastName"){
+                return{
+                    ...prevUser,
+                    firstAndLastName: value
+                }
+            }
+            
         })
+        console.log(newUser);
+        
     }
 
     function handleRegSubmit(event){
 
+        console.log(newUser);
         const data = {
             username: newUser.username,
             password: newUser.password,
@@ -153,6 +169,8 @@ function App (){
             city: newUser.city,
             country: newUser.country
         }
+
+        console.log(data);
         
         const url ="http://localhost:3001/register";
 
@@ -168,10 +186,11 @@ function App (){
                     setAuthentication(true);
 
                 }
+                
             
             })
             .catch((error) => {
-                console.log(error);
+                setRegError("Wrong address");
             });
         } else{
             setRegError("Passwords don't match");
@@ -203,12 +222,12 @@ function App (){
                     
 
                 }
-                else if(response.data === "WRONG"){
-                    setLogError("Wrong username or password");
+                else if(response.status === 401){
+                    
                 }
             })
             .catch((error) => {
-                console.log(error);
+                setLogError("Wrong username or password");
             })
         
         
@@ -267,7 +286,7 @@ function App (){
 
     }
 
-    console.log("Auth :",isAuthenticated);
+    
     
    
 
@@ -283,36 +302,36 @@ function App (){
                     {isAuthenticated === false ? <Redirect to="/" /> :
 
 
-            <Grid container>
-                <Grid item sm={2}></Grid>
-                <Grid item xs={12} md={8} container direction="column">
-                    <Header/>
+                        <Grid container>
+                            <Grid item sm={2}></Grid>
+                            <Grid item xs={12} md={8} container direction="column">
+                                <Header/>
 
 
-                    <Grid container my={3}>
-                        <Grid  item xs={12} sm={4}>
-                            <Button onClick={handleFindClick} size="large" color="secondary" fullWidth>FIND JOB</Button>
-                            <Button onClick={handleNewJobClick} size="large" color="secondary" fullWidth>POST JOB</Button>
-                            <Button onClick={handleMessageClick} size="large" color="secondary" fullWidth>MESSAGES</Button>
-                            <Button onClick={handleMyJobsClick} size="large" color="secondary" fullWidth>MY JOBS</Button>
-                            <Button onClick={handleMyProfileClick} size="large" color="secondary" fullWidth>MY PROFILE</Button>
-                        </Grid>
+                                <Grid container my={3}>
+                                    <Grid  item xs={12} sm={4}>
+                                        <Button onClick={handleFindClick} size="large" color="secondary" fullWidth>FIND JOB</Button>
+                                        <Button onClick={handleNewJobClick} size="large" color="secondary" fullWidth>POST JOB</Button>
+                                        <Button onClick={handleMessageClick} size="large" color="secondary" fullWidth>MESSAGES</Button>
+                                        <Button onClick={handleMyJobsClick} size="large" color="secondary" fullWidth>MY JOBS</Button>
+                                        <Button onClick={handleMyProfileClick} size="large" color="secondary" fullWidth>MY PROFILE</Button>
+                                    </Grid>
 
 
-                       
-                        <Grid container item xs={12} sm={8}><Box p={1}>
+                                
+                                    <Grid container item xs={12} sm={8}><Box p={1}>
+                                    
+                                    {pageSwitch(currentPage)}
+                                    </Box>
+                                    </Grid>
+                                </Grid>
+                                    
+                            </Grid>
+                            <Grid item  sm={2}></Grid>
+
+                            
                         
-                        {pageSwitch(currentPage)}
-                           </Box>
-                        </Grid>
-                    </Grid>
-                        
-                </Grid>
-                <Grid item  sm={2}></Grid>
-
-                
-            
-            </Grid>}
+                        </Grid>}
                 </Route> 
 
                 <Route path="/register">

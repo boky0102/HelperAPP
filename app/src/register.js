@@ -131,6 +131,20 @@ export default function Register(props) {
               margin="normal"
               required
               fullWidth
+              name="firstAndLastName"
+              label="First and Last name"
+              type="text"
+              id="password"
+              autoComplete="current-password"
+            />
+
+            <TextField
+              required
+              onChange={props.handleChangeRegister}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
               name="streetAndNum"
               label="Street and number"
               type="text"
