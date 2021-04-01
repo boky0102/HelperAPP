@@ -45,6 +45,7 @@ const options = {
 // Server modules
 const auth =  require("./authenticate.js");
 const distance = require("./distanceCalc");
+const titleDiff = require("./searchLogic");
 
 
 
@@ -89,7 +90,7 @@ const User = mongoose.model('User', userSchema);
 const jobSchema = new mongoose.Schema({
     username: String,
     title: String,
-    decription: String,
+    description: String,
     category: String,
     deadline: String,
     budget: Number,
@@ -106,6 +107,62 @@ const jobSchema = new mongoose.Schema({
 });
 
 const Job = mongoose.model('Job', jobSchema);
+
+
+
+
+
+
+function sortByDiffIndex(jobA, jobB){
+    if(jobA.titleDiffIndx >= jobB.titleDiffIndx){
+        return 1;
+    } else{
+        return -1;
+    }
+}
+
+
+
+function filterJobsByTitle(jobs,title){
+
+
+    return new Promise((resolve, reject) => {
+        const filteredJobs = [];
+
+   
+
+        jobs.forEach((job) => {
+        
+
+        const titleDiffIndx = titleDiff.getTitleDiffIndex(job.title, title);
+        
+        if(titleDiffIndx > 1){
+            const jobWthIndx = {
+                username: job.username,
+                budget: job.budget,
+                title: job.title,
+                category: job.category,
+                description: job.description,
+                imgSrc: job.imgSrc,
+                id: job.id,
+                diffIndx: titleDiffIndx
+            };
+            
+            filteredJobs.push(jobWthIndx);
+        }
+
+        const returnArray = filteredJobs.sort((a,b) => (a.diffIndx > b.diffIndx ? -1 : 1));
+
+        resolve(returnArray);
+
+
+    })
+
+
+        
+    })
+
+}
 
 
 // ROUTING
@@ -216,7 +273,7 @@ app.post("/login", (req,res) => {
     const reqUsername = req.body.username;
     const reqPassword = req.body.password;
 
-    console.log(reqUsername, reqPassword);
+
 
     User.findOne({userName: reqUsername}, (err, user) => {
         if(err){
@@ -319,7 +376,7 @@ app.post("/newJob", upload.single("productImage") ,(req,res) => {
     
 })
 
-app.get("/find/:title&:category&:distance&:username", (req,res) => {
+app.get("/find/:title&:category&:distance&:username",(req,res) => {
 
     console.log(req.params.title);
     console.log(req.params.category);
@@ -343,15 +400,144 @@ app.get("/find/:title&:category&:distance&:username", (req,res) => {
             })
         }
 
-        else if(req.params.category !== "none" && req.params.distance !== "none"){
+        else if(req.params.category !== "none" && req.params.distance !== "none" && req.params.username !== "none"){
 
             
-            axios.get()
+
+            Job.find({category: req.params.category}, (err, jobs) => {
+                
+                if(jobs){
+                    
+                    User.findOne({userName: req.params.username}, (err, user) => {
+                        if(user){
+
+                            var filteredJobs = [];
+                            jobs.forEach((job) => {
+                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                    filteredJobs.push(job);
+                                }
+                            })
+                            res.send(filteredJobs);
+                            
+
+
+                        }else{
+                            console.log("Didnt find user");
+                        }
+                        
+                    })
+                }
+
+            })
+
+        }
+
+        else if(req.params.category === "none" && req.params.distance !== "none" && req.params.username !== "none"){
+
+            Job.find({}, (err, jobs) => {
+                
+                if(jobs){
+                    
+                    User.findOne({userName: req.params.username}, (err, user) => {
+                        if(user){
+                            
+                            var filteredJobs = [];
+                            jobs.forEach((job) => {
+                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                    filteredJobs.push(job);
+                                }
+                            })
+                            res.send(filteredJobs);
+                            
+
+
+                        }else{
+                            console.log("Didnt find user");
+                        }
+                        
+                    })
+                }
+            })
+
+        }
+
+    }
+    else if(req.params.title !== "none"){
+        if(req.params.category === "none" && req.params.distance === "none"){
+
+            Job.find({}, (err, jobs) => {
+                filterJobsByTitle(jobs, req.params.title).then((response) => {
+                    res.send(response);
+                });
+                
+            })
+        }
+
+        else if (req.params.category !== "none" && req.params.distance ==="none"){
+
+            Job.find({category: req.params.category}, (err, jobs) => {
+                filterJobsByTitle(jobs, req.params.title).then((response) => {
+                    res.send(response);
+                })
+            })
+
+        }
+        else if (req.params.category !== "none" && req.params.distance !== "none" && req.params.username !== "none"){
+            Job.find({category: req.params.category}, (err,jobs) => {
+                if(jobs){
+                    User.findOne({userName: req.params.username}, (err, user) => {
+                        console.log(user);
+                        if(user){
+                            let filteredJobs = [];
+                            jobs.forEach((job) => {
+                                console.log(job);
+                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                    filteredJobs.push(job);
+                                }
+                            })
+                            filterJobsByTitle(filteredJobs, req.params.title).then((response) => {
+                                res.send(response);
+                            })
+                        }
+                    })
+                }
+            })
+
+        }
+        else if (req.params.category === "none" && req.params.distance !== "none" && req.params.username !== "none"){
+
+            Job.find({}, (err,jobs) => {
+                if(jobs){
+                    User.findOne({userName: req.params.username}, (err, user) => {
+                        console.log(user);
+                        if(user){
+                            let filteredJobs = [];
+                            jobs.forEach((job) => {
+                                console.log(job);
+                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                    filteredJobs.push(job);
+                                }
+                            })
+                            filterJobsByTitle(filteredJobs, req.params.title).then((response) => {
+                                res.send(response);
+                            })
+                        }
+                    })
+                }
+            })
+
+
+
+
         }
 
 
 
+
+
     }
+
+
 
     
 
