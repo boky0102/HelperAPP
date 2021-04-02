@@ -101,7 +101,8 @@ const jobSchema = new mongoose.Schema({
     coordinates: {
         x: Number,
         y: Number
-    }
+    },
+    distance: String
 
 
 });
@@ -145,6 +146,7 @@ function filterJobsByTitle(jobs,title){
                 description: job.description,
                 imgSrc: job.imgSrc,
                 id: job.id,
+                deadline: job.deadline,
                 diffIndx: titleDiffIndx
             };
             
@@ -414,6 +416,7 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                             var filteredJobs = [];
                             jobs.forEach((job) => {
                                 if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
                                     filteredJobs.push(job);
                                 }
                             })
@@ -444,6 +447,7 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                             var filteredJobs = [];
                             jobs.forEach((job) => {
                                 if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y);
                                     filteredJobs.push(job);
                                 }
                             })
@@ -486,12 +490,13 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
             Job.find({category: req.params.category}, (err,jobs) => {
                 if(jobs){
                     User.findOne({userName: req.params.username}, (err, user) => {
-                        console.log(user);
+
                         if(user){
                             let filteredJobs = [];
                             jobs.forEach((job) => {
-                                console.log(job);
+                                
                                 if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
                                     filteredJobs.push(job);
                                 }
                             })
@@ -509,12 +514,13 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
             Job.find({}, (err,jobs) => {
                 if(jobs){
                     User.findOne({userName: req.params.username}, (err, user) => {
-                        console.log(user);
+                   
                         if(user){
                             let filteredJobs = [];
                             jobs.forEach((job) => {
-                                console.log(job);
+                                
                                 if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
                                     filteredJobs.push(job);
                                 }
                             })

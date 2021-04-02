@@ -59,7 +59,7 @@ function App (){
     function checkCookie(){
         const data=cookies.get('token');
         
-        const url="http://localhost:3001/tajna";
+        const url="http://192.168.1.8:3001/tajna";
 
         axios.get(url,{headers: {'authorization': `Bearer ${data}`}})
         .then((response) => {
@@ -172,7 +172,7 @@ function App (){
 
         console.log(data);
         
-        const url ="http://localhost:3001/register";
+        const url ="http://192.168.1.8:3001/register";
 
 
         if(newUser.password === newUser.passwordConfirm){
@@ -208,7 +208,7 @@ function App (){
             password: user.password
         }
 
-        const url = "http://localhost:3001/login";
+        const url = "http://192.168.1.8:3001/login";
         
         axios.post(url, data, {headers: {'Content-Type': 'application/json'}})
             .then((response) => {
@@ -236,6 +236,11 @@ function App (){
         
         event.preventDefault();
 
+    }
+
+    function handleLogOut(event){
+        cookies.remove('token');
+        setAuthentication(false);
     }
 
     function handleFindClick(){
@@ -304,12 +309,14 @@ function App (){
 
                         <Grid container>
                             <Grid item sm={2}></Grid>
-                            <Grid item xs={12} md={8} container direction="column">
-                                <Header/>
+                            <Grid container item xs={12} md={8} container direction="column">
+                                <Grid item container>
+                                    <Header handleLogOut={handleLogOut}/>
+                                </Grid>
 
 
-                                <Grid container my={3}>
-                                    <Grid  item xs={12} sm={4}>
+                                <Grid container item my={3}>
+                                    <Grid  item xs={12} sm={4} >
                                         <Button onClick={handleFindClick} size="large" color="secondary" fullWidth>FIND JOB</Button>
                                         <Button onClick={handleNewJobClick} size="large" color="secondary" fullWidth>POST JOB</Button>
                                         <Button onClick={handleMessageClick} size="large" color="secondary" fullWidth>MESSAGES</Button>
@@ -319,10 +326,10 @@ function App (){
 
 
                                 
-                                    <Grid container item xs={12} sm={8}><Box p={1}>
-                                    
-                                    {pageSwitch(currentPage)}
-                                    </Box>
+                                    <Grid container item xs={12} sm={8}>
+                                        <Box p={1}>
+                                            {pageSwitch(currentPage)}
+                                        </Box>
                                     </Grid>
                                 </Grid>
                                     
@@ -336,7 +343,7 @@ function App (){
 
                 <Route path="/register">
 
-                    {isAuthenticated ? <Redirect to={currentPage} /> : <Register  handleChangeRegister={handleChangeRegister} handleRegSubmit={handleRegSubmit} display={regError != "" ? "block" : "none"} regErrMessage={regError} /> }
+                    {isAuthenticated ? <Redirect to="/home" /> : <Register  handleChangeRegister={handleChangeRegister} handleRegSubmit={handleRegSubmit} display={regError != "" ? "block" : "none"} regErrMessage={regError} /> }
         
                     
                     
@@ -347,7 +354,7 @@ function App (){
 
                 <Route path="/">
 
-                    {isAuthenticated ? <Redirect to={currentPage}/> : <Login handleChange={handleChangeLogin} handleLogInSubmit={handleLogInSubmit} display={logError != "" ? "block" : "none"}/> }
+                    {isAuthenticated ? <Redirect to="/home"/> : <Login handleChange={handleChangeLogin} handleLogInSubmit={handleLogInSubmit} display={logError != "" ? "block" : "none"}/> }
                     
                     
                 </Route>

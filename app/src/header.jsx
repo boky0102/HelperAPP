@@ -1,4 +1,4 @@
-import { AppBar, Avatar, Toolbar, Box } from "@material-ui/core";
+import { AppBar, Avatar, Toolbar, Box, Button } from "@material-ui/core";
 
 import {makeStyles} from "@material-ui/styles";
 
@@ -41,7 +41,7 @@ const useStyles = makeStyles({
     
 })
 
-function Header(){
+function Header(props){
     const classes = useStyles();
     return(
         <AppBar  position="static" className={classes.appBarStyle}>
@@ -55,8 +55,11 @@ function Header(){
                         <img alt="helper logo" src={logo} className={classes.logoStyle}/>
                         
                     </Box>
-                    <Box>
+                    {/* <Box>
                         <NotificationsIcon className={classes.iconStyle} />
+                    </Box> */}
+                    <Box>
+                        <Button color="secondary" variant="contained" onClick={props.handleLogOut}>Log out</Button>
                     </Box>
                 
             </Toolbar>

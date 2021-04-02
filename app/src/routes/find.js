@@ -1,10 +1,12 @@
 
 import { AppBar, makeStyles, Toolbar, TextField, Box, FormControl, InputLabel, Select, MenuItem, Typography, Slider, Button, Fade } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import theme from "../theme";
 import SearchIcon from '@material-ui/icons/Search';
 import JobCard from "../components/jobCard";
+import UserContext from "../userContext";
+import axios from "axios";
 
 const dotenv = require('dotenv');
 
@@ -42,57 +44,201 @@ function Find(props){
 
     const [category, setCategory] = useState("");
 
+    const user = useContext(UserContext);
+    console.log("USER :", user);
+
+    
+
+    const [sliderVal, setSliderVal] = useState(0);
+
+
+
+    function handleSearchChange(event){
+        const {value, name} = event.target;
+        if(name == "title"){
+            setSearchParams((prevParams) => {
+                return{
+                    ...prevParams,
+                    title: value
+                }
+                
+            })
+        }
+
+        
+        console.log(searchParams);
+
+    }
+
+    
+
     function handleChangeCategory(event){
         setCategory(event.target.value);
-    }
-
-    function add2Weeks(){
-        var date = new Date();
-        date.setDate(date.getDate() + 14);
-
-        const ye = date.getFullYear();
-        var mon = date.getMonth()+1;
-        mon = mon.toString();
-
-
-        if(mon.length === 1){
-            mon="0"+mon;
-        }
-
-        var day = date.getDate();
-        day = day.toString();
-        if(day.length === 1){
-            day="0"+day;
-        }
-        
-
-        return `${ye}-${mon}-${day}`
-        
-      
+        setSearchParams((prevParams) => {
+            return{
+                ...prevParams,
+                category: event.target.value
+            }
+        })
     }
 
     
 
-    
+
+
+    const updateRange = (event, data) => {
+        setSliderVal(data);
+        setSearchParams((prevParams) => {
+            return{
+                ...prevParams,
+                distance: data
+            }
+        })
+
+    }
+
+    const [searchParams, setSearchParams] = useState({
+        title:"",
+        category: "",
+        distance: sliderVal,
+        user: user
+    })
+
+    const [jobData, setJobData] = useState([]);
 
     
+
+    function handleSearchSubmit(event){
+
+        event.preventDefault();
+
+
+        setJobData([]);
+        
+
+        var titleURL = "none";
+        var categoryURL = "none";
+        var distanceURL = "none";
+
+        
+        
+        
+
+        if(searchParams.title === "" && (searchParams.category === "" || searchParams.category === "Any") && searchParams.distance === 0 ){
+            
+            titleURL = "none";
+            categoryURL = "none";
+            distanceURL = "none";
+
+        }
+
+        else if(searchParams.title !== "" && (searchParams.category === "" || searchParams.category === "Any") && searchParams.distance === 0){
+            
+            titleURL = searchParams.title;
+            categoryURL = "none";
+            distanceURL = "none";
+
+        }
+
+        else if(searchParams.title !== "" && (searchParams.category !== "" && searchParams.category !== "Any") && searchParams.distance === 0){
+
+            titleURL = searchParams.title;
+            categoryURL = searchParams.category;
+            distanceURL = "none";
+            
+        }
+
+        else if(searchParams.title !== "" && (searchParams.category !== "" && searchParams.category !== "Any") && searchParams.distance !== 0){
+            
+            titleURL = searchParams.title;
+            categoryURL = searchParams.category;
+            distanceURL = searchParams.distance;
+
+        }
+
+        else if(searchParams.title === "" && (searchParams.category === "" || searchParams.category === "Any") && searchParams.distance !== 0){
+            
+            titleURL = "none";
+            categoryURL = "none";
+            distanceURL = searchParams.distance;
+        }
+
+        else if(searchParams.title === "" && (searchParams.category !== "" && searchParams.category !== "Any") && searchParams.distance !== 0){
+
+            titleURL = "none";
+            categoryURL = searchParams.category;
+            distanceURL = searchParams.distance;
+
+        }
+
+        else if(searchParams.title === "" && (searchParams.category !== "" && searchParams.category !== "Any") && searchParams.distance === 0){
+
+            titleURL = "none";
+            categoryURL = searchParams.category;
+            distanceURL = "none";
+
+        }
+
+        else if(searchParams.title !== "" && (searchParams.category === "" || searchParams.category === "Any") && searchParams.distance !== 0){
+
+            titleURL = searchParams.title;
+            categoryURL = "none";
+            distanceURL = searchParams.distance;
+
+        }
+
+        
+
+
+        var userURL = searchParams.user;
+
+        if(userURL === ""){
+            userURL = "none";
+        }
+
+        console.log(titleURL, categoryURL, distanceURL, userURL);
+
+
+        const url="http://192.168.1.8:3001/find/"+titleURL+"&"+categoryURL+"&"+distanceURL+"&"+userURL;
+
+        axios.get(url).then((response) => {
+            setJobData(response.data);
+            
+        }).catch((err) => {
+            console.log(err);
+        });
+
+
+    }
+
+    function makeImgURL(imgSrc){
+        var url = "http://192.168.1.8:3001/"+imgSrc;
+        return url;
+    }
+
+    console.log(jobData);
+
+
+    
+
+
     
     return(
-        <Grid container direction="column" >
+        <Grid container direction="column" xs={12}>
             
-            <Grid container item>
+            <Grid container item xs={12}>
                 
-                <AppBar position="static" >
+                <AppBar position="relative" >
                 <Toolbar className={classes.searchToolbarStyle}>
-                    <form action='get'>
+                    <form noValidate onSubmit={handleSearchSubmit}>
                     <Grid container direction="column">
                         <Grid item xs={12}>
                             <Box mt={2} mb={1}>
-                            <TextField color="secondary" fullWidth="true" id="standard-basic" size="medium" placeholder="Search by title"></TextField>
+                            <TextField onChange={handleSearchChange} name="title" color="secondary" fullWidth="true" id="standard-basic" size="medium" placeholder="Search by title"></TextField>
                             </Box>
                         </Grid>
 
-                        <Grid>
+                        <Grid item>
                             <Box pb={2}>
                             <FormControl className={classes.formControl}>
                                 <InputLabel  color="secondary">Category</InputLabel>
@@ -120,12 +266,12 @@ function Find(props){
                         </Grid>
 
                         
-                        <Grid> <Typography gutterBottom >Maximum distance in km (If set to 0 it will display all distances)</Typography></Grid>
+                        <Grid item> <Typography gutterBottom >Maximum distance in km (If set to 0 it will display all distances)</Typography></Grid>
                         <Box mb={2}>
                         <Grid container item direction="row" justify="space-evenly">
                             <Grid item xs={12} sm={4}>
                                 
-                                <Slider color={"secondary"} valueLabelDisplay="auto" aria-label="pretto slider" defaultValue={0} />
+                                <Slider value={sliderVal}  name="distance" onChange={updateRange} color={"secondary"} valueLabelDisplay="auto" aria-label="pretto slider"  />
 
                             </Grid>
                             <Grid item xs={0} sm={4}>
@@ -133,7 +279,7 @@ function Find(props){
                             </Grid>
                             <Grid item xs={12} sm={4}>
 
-                                <Button variant="contained" color="primary" endIcon={<SearchIcon/>}>Search</Button>
+                                <Button type="submit" variant="contained" color="primary" endIcon={<SearchIcon/>}>Search</Button>
                             </Grid>
                             
                             
@@ -148,22 +294,14 @@ function Find(props){
             </Grid>
 
             <Grid container item xs={12} direction="column" alignContent="center" >
+
+                {jobData.map((job) => (
+                    <Box width="inherit"   mt={2} borderTop={1} borderColor="grey.200">
+                        <JobCard title={job.title} distance={job.distance} imgSrc={makeImgURL(job.imgSrc)} description={job.description.substring(0,60)+"..."} budget={job.budget} category={job.category} deadline={job.deadline} />
+                    </Box>
+                ))}
+
             
-                <Box  width="inherit"   mt={2} borderTop={2} borderColor="grey.300">
-                    <JobCard/>
-                </Box>
-
-                <Box  width="inherit"  mt={2} borderTop={2} borderColor="grey.300"> 
-                    <JobCard/>
-                </Box>
-
-                <Box  width="inherit"  mt={2} borderTop={2} borderColor="grey.300"> 
-                    <JobCard/>
-                </Box>
-
-                <Box  width="inherit"  mt={2} borderTop={2} borderColor="grey.300"> 
-                    <JobCard/>
-                </Box>
                 
                 
             </Grid>

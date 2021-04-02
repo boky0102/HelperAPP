@@ -60,7 +60,7 @@ function NewJob(){
         title: "",
         description: "",
         category: "",
-        deadline: "",
+        deadline: add2Weeks(),
         budget: 0,
         adress: {
             streetAndNum: "",
@@ -79,7 +79,7 @@ function NewJob(){
         console.log(currentAdress);
         
 
-        const url = "http://localhost:3001/find-adress/"+currentAdress;
+        const url = "http://192.168.1.8:3001/find-adress/"+currentAdress;
         
         axios.get(url).then(
             (response) => {
@@ -235,7 +235,7 @@ function NewJob(){
         
 
         console.log("SUBMITED");
-        const url="http://localhost:3001/newJob";
+        const url="http://192.168.1.8:3001/newJob";
         const data = cookies.get('token');
 
         const config = {
