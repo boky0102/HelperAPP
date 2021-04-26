@@ -1,0 +1,50 @@
+<div className={classes.root2}>
+        <Box border={1} borderColor={"grey.300"}>
+          <Grid container direction="row" xs={12}>
+            <Grid item xs={12} sm={12} lg={8} >
+              <Box border={1}>
+                <img
+                  width={"100%"}
+                  src="https://miro.medium.com/max/6048/1*LMqU6_SJ3n_Kb6fulItnCA.jpeg"
+                />
+              </Box>
+            </Grid>
+        
+            <Grid item container direction="column" xs={12} sm={12} lg={4} >
+              
+                <Grid item>
+                  <Box m={2}>Titledsds ffdsfsdfsd fsdfsdfsdfdsfsd</Box>
+                </Grid>
+
+                <Grid item container direction="column" style={{height: "auto"}}>
+                  <Box border={1}>
+                    <Grid item >
+                      <Box   borderTop={1} borderColor={"grey.300"} >
+                        <Box m={2}>
+                          <Typography variant="p"> ggkfdlčsgklčdskglč dfskglčkdfsčlgk dfslg kdfsčg kčfds gkdflčs kgčldsf lkgdf skg dčflk sgčl dfsč gkdfsčlkg dčflsk gčdsf kgčfd lsgk čldfks gčldkf sčl</Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+
+                    <Grid item >
+                      <Box  border={1}>Bottom grid item dhgfhfdh dfghdfhdfg hfdghfgdh</Box>
+                    </Grid>
+
+                    
+
+                    
+                  </Box>
+
+                
+              
+                </Grid>
+
+                
+
+                
+                
+            </Grid>
+            
+          </Grid>
+        </Box>
+      </div>

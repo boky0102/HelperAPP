@@ -199,7 +199,7 @@ function Find(props){
         console.log(titleURL, categoryURL, distanceURL, userURL);
 
 
-        const url="http://192.168.1.8:3001/find/"+titleURL+"&"+categoryURL+"&"+distanceURL+"&"+userURL;
+        const url="http://localhost:3001/find/"+titleURL+"&"+categoryURL+"&"+distanceURL+"&"+userURL;
 
         axios.get(url).then((response) => {
             setJobData(response.data);
@@ -212,7 +212,7 @@ function Find(props){
     }
 
     function makeImgURL(imgSrc){
-        var url = "http://192.168.1.8:3001/"+imgSrc;
+        var url = "http://localhost:3001/"+imgSrc;
         return url;
     }
 
@@ -296,8 +296,8 @@ function Find(props){
             <Grid container item xs={12} direction="column" alignContent="center" >
 
                 {jobData.map((job) => (
-                    <Box width="inherit"   mt={2} borderTop={1} borderColor="grey.200">
-                        <JobCard title={job.title} distance={job.distance} imgSrc={makeImgURL(job.imgSrc)} description={job.description.substring(0,60)+"..."} budget={job.budget} category={job.category} deadline={job.deadline} />
+                    <Box width="inherit"    borderTop={1} borderColor="grey.200">
+                        <JobCard id={job._id} title={job.title} distance={job.distance} imgSrc={makeImgURL(job.imgSrc)} description={job.description.substring(0,60)+"..."} budget={job.budget} category={job.category} deadline={job.deadline} />
                     </Box>
                 ))}
 

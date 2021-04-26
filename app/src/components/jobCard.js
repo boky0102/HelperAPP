@@ -1,6 +1,10 @@
-import { Grid, Box, Typography, Link,} from "@material-ui/core";
+import { Grid, Box, Typography} from "@material-ui/core";
 
 import React, { useState } from "react";
+import { withRouter, Link } from "react-router-dom";
+import Category from "./category";
+
+
 
 
 
@@ -21,23 +25,23 @@ function JobCard(props){
             </Grid>
             <Grid item container xs={10} direction="column">
                 
-                <Grid item xs={12} ><Box mb={2} mt={1}><Typography variant="h6"><Link to="/job" color="secondary" ><b>{props.title}</b></Link></Typography></Box></Grid>
+                <Grid item xs={12} ><Box mb={2} mt={1}><Typography variant="h6"><Link to={"/home/job/"+ props.id} color="secondary" ><b>{props.title}</b></Link></Typography></Box></Grid>
                 <Grid item container xs={12}>
                 <Grid item container xs={10} direction="column">
                     <Grid item xs={12}>
                         <Typography>Description: {props.description}</Typography>
                     </Grid>
-                    <Box mb={2} mt={1}>
+                    <Box  mt={1}>
                         <Grid item container direction="row" xs={12}>
                             
                             <Grid item xs={4}>
-                            <Typography>Category: {props.category}</Typography>
+                                <Category category={props.category} />
                             </Grid>
                             <Grid item xs={4}>
                                 <Typography>Deadline: {props.deadline}</Typography>
                             </Grid>
                             <Grid item xs={4}>
-                                <Typography>Distance: {props.distance} </Typography>
+                                <Typography>Distance: {props.distance != undefined ? props.distance.substring(0,5) + "km" : ""} </Typography>
                             </Grid>
                             
                         </Grid>
@@ -56,5 +60,5 @@ function JobCard(props){
     )
 }
 
-export default JobCard;
+export default withRouter(JobCard);
 

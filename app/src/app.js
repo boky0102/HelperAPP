@@ -6,7 +6,8 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Redirect
+    Redirect,
+    Link
   } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -59,7 +60,7 @@ function App (){
     function checkCookie(){
         const data=cookies.get('token');
         
-        const url="http://192.168.1.8:3001/tajna";
+        const url="http://localhost:3001/tajna";
 
         axios.get(url,{headers: {'authorization': `Bearer ${data}`}})
         .then((response) => {
@@ -167,12 +168,13 @@ function App (){
             password: newUser.password,
             streetAndNum: newUser.streetAndNum,
             city: newUser.city,
-            country: newUser.country
+            country: newUser.country,
+            firstAndLastName: newUser.firstAndLastName
         }
 
-        console.log(data);
+        console.log("Data prije slanje :",data);
         
-        const url ="http://192.168.1.8:3001/register";
+        const url ="http://localhost:3001/register";
 
 
         if(newUser.password === newUser.passwordConfirm){
@@ -184,6 +186,7 @@ function App (){
                 else if(response.data === "OK"){
                     
                     setAuthentication(true);
+                    setCurrentUser(data.username);
 
                 }
                 
@@ -208,13 +211,14 @@ function App (){
             password: user.password
         }
 
-        const url = "http://192.168.1.8:3001/login";
+        const url = "http://localhost:3001/login";
         
         axios.post(url, data, {headers: {'Content-Type': 'application/json'}})
             .then((response) => {
 
                 if(response.status === 200){
                     setAuthentication(true);
+                    setCurrentUser(data.username);
                     const cookies = new Cookies();
 
                     cookies.set('token', response.data.token);
@@ -317,18 +321,37 @@ function App (){
 
                                 <Grid container item my={3}>
                                     <Grid  item xs={12} sm={4} >
-                                        <Button onClick={handleFindClick} size="large" color="secondary" fullWidth>FIND JOB</Button>
-                                        <Button onClick={handleNewJobClick} size="large" color="secondary" fullWidth>POST JOB</Button>
-                                        <Button onClick={handleMessageClick} size="large" color="secondary" fullWidth>MESSAGES</Button>
-                                        <Button onClick={handleMyJobsClick} size="large" color="secondary" fullWidth>MY JOBS</Button>
-                                        <Button onClick={handleMyProfileClick} size="large" color="secondary" fullWidth>MY PROFILE</Button>
+                                        <Link to="/home/find"><Button size="large" color="secondary" fullWidth>FIND JOB</Button></Link>
+                                        <Link to="/home/post"><Button size="large" color="secondary" fullWidth>POST JOB</Button></Link>
+                                        <Link to="/home/messages"><Button size="large" color="secondary" fullWidth>MESSAGES</Button></Link>
+                                        <Link to="/home/myjobs"><Button size="large" color="secondary" fullWidth>MY JOBS</Button></Link>
+                                        <Link to="/home/myprofile"><Button size="large" color="secondary" fullWidth>MY PROFILE</Button></Link>
                                     </Grid>
 
 
                                 
                                     <Grid container item xs={12} sm={8}>
-                                        <Box p={1}>
-                                            {pageSwitch(currentPage)}
+                                        <Box p={1} width="inherit">
+                                            
+                                            <Switch>
+
+                                                <Route path="/home/find">
+                                                    <Find />
+                                                </Route>
+
+                                                <Route path="/home/post">
+                                                    <NewJob />
+                                                </Route>
+
+                                                <Route path="/home/job/:id">
+                                                    <Job />
+                                                </Route>
+
+                                                <Route path="/home/messages">
+                                                    <Messager />
+                                                </Route>
+
+                                            </Switch>
                                         </Box>
                                     </Grid>
                                 </Grid>
@@ -343,18 +366,17 @@ function App (){
 
                 <Route path="/register">
 
-                    {isAuthenticated ? <Redirect to="/home" /> : <Register  handleChangeRegister={handleChangeRegister} handleRegSubmit={handleRegSubmit} display={regError != "" ? "block" : "none"} regErrMessage={regError} /> }
+                    {isAuthenticated ? <Redirect to="/home/find" /> : <Register  handleChangeRegister={handleChangeRegister} handleRegSubmit={handleRegSubmit} display={regError != "" ? "block" : "none"} regErrMessage={regError} /> }
         
                     
                     
                 </Route>
 
-                
-
+            
 
                 <Route path="/">
 
-                    {isAuthenticated ? <Redirect to="/home"/> : <Login handleChange={handleChangeLogin} handleLogInSubmit={handleLogInSubmit} display={logError != "" ? "block" : "none"}/> }
+                    {isAuthenticated ? <Redirect to="/home/find"/> : <Login handleChange={handleChangeLogin} handleLogInSubmit={handleLogInSubmit} display={logError != "" ? "block" : "none"}/> }
                     
                     
                 </Route>

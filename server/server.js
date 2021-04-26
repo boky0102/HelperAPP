@@ -79,7 +79,8 @@ const userSchema = new mongoose.Schema({
     coordinates: {
         x: Number,
         y: Number
-    }
+    },
+    reviews: []
 
 })
 
@@ -107,9 +108,26 @@ const jobSchema = new mongoose.Schema({
 
 });
 
+
+
 const Job = mongoose.model('Job', jobSchema);
 
+const messageSchema = new mongoose.Schema({
+    from: String,
+    to: String,
+    viewedBySender: Boolean,
+    viewedByReciever: Boolean,
+    message: String
+});
 
+const Message = mongoose.model('Message', messageSchema);
+
+
+const Notification = mongoose.model('Notification', jobSchema);
+const notificationSchema = new mongoose.Schema({
+    user: String,
+    notificationMessage: String
+})
 
 
 
@@ -195,7 +213,9 @@ app.post("/register", (req,res) =>{
     const reqUsername = req.body.username;
     const reqPassword = req.body.password;
 
+
     console.log(req.body);
+
 
     
 
@@ -243,10 +263,13 @@ app.post("/register", (req,res) =>{
 
                         newUser.coordinates.x = x;
                         newUser.coordinates.y = y;
+
+                        
                         
                         newUser.streetAndNum = req.body.streetAndNum;
                         newUser.city = req.body.city;
                         newUser.country = req.body.country;
+                        newUser.firstAndLastName = req.body.firstAndLastName
                         
                         newUser.save();
 
@@ -389,14 +412,14 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
 
     if(req.params.title === "none"){
 
-        if(req.params.category === "none" && req.params.distance === "none"){
+        if(req.params.category === "none" && req.params.distance === "none" && req.params.username === "none"){
             Job.find({}, (err, jobs) => {
                 res.send(jobs)
             })
 
         }
 
-        else if(req.params.category !== "none" && req.params.distance === "none"){
+        else if(req.params.category !== "none" && req.params.distance === "none" && req.params.username === "none"){
             Job.find({category: req.params.category}, (err, jobs) => {
                 res.send(jobs);
             })
@@ -414,16 +437,23 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                         if(user){
 
                             var filteredJobs = [];
-                            jobs.forEach((job) => {
-                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
-                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
-                                    filteredJobs.push(job);
-                                }
-                            })
-                            res.send(filteredJobs);
+
+                            if(user.userName !== req.params.username){
+
+                                
+                                jobs.forEach((job) => {
+                                    if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                        job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
+                                        filteredJobs.push(job);
+                                    }
+                                })
+                                 res.send(filteredJobs);
+
+
+                            }
+
                             
-
-
+                        
                         }else{
                             console.log("Didnt find user");
                         }
@@ -443,14 +473,23 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                     
                     User.findOne({userName: req.params.username}, (err, user) => {
                         if(user){
-                            
+
                             var filteredJobs = [];
-                            jobs.forEach((job) => {
-                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
-                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y);
-                                    filteredJobs.push(job);
-                                }
-                            })
+
+                            if(user.userName !== req.params.username){
+
+                                jobs.forEach((job) => {
+                                    if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                        job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y);
+                                        filteredJobs.push(job);
+                                    }
+                                })
+
+
+                            }
+                            
+                            
+                            
                             res.send(filteredJobs);
                             
 
@@ -465,9 +504,36 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
 
         }
 
+        else if(req.params.category === "none" && req.params.distance === "none" && req.params.username !== "none"){
+            Job.find({}, (err,jobs) => {
+                if(err){
+                    console.log("Err");
+                }
+                else{
+                    console.log("TU SAM USO")
+                    
+                    const filteredJobs = [];
+                    jobs.forEach((job) => {
+                        console.log(job.username, " ", req.params.username);
+                        if (job.username != req.params.username){
+                            filteredJobs.push(job);
+                        }
+                    })
+                    if(filteredJobs.length>0){
+                        res.send(filteredJobs);
+                    }
+                    else{
+                        res.status(404).send();
+                    }
+                }
+            })
+        }
+
+
+
     }
     else if(req.params.title !== "none"){
-        if(req.params.category === "none" && req.params.distance === "none"){
+        if(req.params.category === "none" && req.params.distance === "none" && req.params.username === "none"){
 
             Job.find({}, (err, jobs) => {
                 filterJobsByTitle(jobs, req.params.title).then((response) => {
@@ -477,7 +543,7 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
             })
         }
 
-        else if (req.params.category !== "none" && req.params.distance ==="none"){
+        else if (req.params.category !== "none" && req.params.distance ==="none" && req.params.username === "none"){
 
             Job.find({category: req.params.category}, (err, jobs) => {
                 filterJobsByTitle(jobs, req.params.title).then((response) => {
@@ -492,17 +558,27 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                     User.findOne({userName: req.params.username}, (err, user) => {
 
                         if(user){
-                            let filteredJobs = [];
-                            jobs.forEach((job) => {
+
+
+                            if(user.username !== req.params.username){
+                                let filteredJobs = [];
+                                jobs.forEach((job) => {
                                 
                                 if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
                                     job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
                                     filteredJobs.push(job);
                                 }
-                            })
-                            filterJobsByTitle(filteredJobs, req.params.title).then((response) => {
+                                })
+                                filterJobsByTitle(filteredJobs, req.params.title).then((response) => {
                                 res.send(response);
-                            })
+                                })
+
+
+                            }
+                            else{
+                                res.send("No data");
+                            }
+                            
                         }
                     })
                 }
@@ -516,45 +592,121 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                     User.findOne({userName: req.params.username}, (err, user) => {
                    
                         if(user){
-                            let filteredJobs = [];
-                            jobs.forEach((job) => {
+
+                            if(user.userName !== req.params.username){
+
+                                let filteredJobs = [];
+                                jobs.forEach((job) => {
                                 
                                 if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
                                     job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
                                     filteredJobs.push(job);
                                 }
-                            })
-                            filterJobsByTitle(filteredJobs, req.params.title).then((response) => {
-                                res.send(response);
-                            })
+                                })
+                                filterJobsByTitle(filteredJobs, req.params.title).then((response) => {
+                                    res.send(response);
+                                })
+
+
+                            }
+                            else{
+                                res.send("No data");
+                            }
+                            
                         }
                     })
                 }
             })
 
-
-
-
         }
 
+        else if(req.params.category === "none" && req.params.distance === "none" && req.params.username !== "none"){
+            Job.find({}, (err,jobs) => {
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    const filteredJobs = [];
+                    jobs.forEach((job) => {
+                        if(job.username !== req.params.username){
+                            filteredJobs.push(job);
+                        }
+                    });
+                    if(filteredJobs.length > 0){
+                        filterJobsByTitle(filteredJobs, req.params.title)
+                        .then((response) => {
+                            res.send(response);
+                        });
+                        
+                    }
+                    else{
+                        res.status(404).send();
+                    }
+                }
 
-
-
+            })
+        }
 
     }
-
-
-
-    
-
-
 
     
 })
     
 
 
+app.get("/job/:id", (req,res) => {
 
+    const id = req.params.id;
+
+    Job.findOne({_id: id}, (err, job) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            User.findOne({userName: job.username}, (err, user) => {
+                
+                if(user){
+                    const data = {
+                        jobData: job,
+                        userData: {
+                            name: user.firstAndLastName,
+                            username: user.userName,
+                            reviews: user.reviews
+    
+                        }
+                    }
+                    res.send(data);
+
+                }
+
+                else{
+                    console.log("Nema takvog usera");
+                }
+                
+            })
+        }
+    })
+
+})
+
+app.post("/message", [auth.isAuth] , (req,res) => {
+    const username = req.jwt.userName;
+    const message = req.body.message;
+    const reciever = req.body.reciever;
+    console.log(username, "-", reciever, ":", message);
+
+    if(username !== "" && message !== "" && reciever !== ""){
+        const newMessage = new Message;
+        newMessage.from = username;
+        newMessage.to = reciever;
+        newMessage.message = message;
+        newMessage.save();
+        res.status(200).send();
+    }
+    else{
+        res.status(400).send();
+    }
+})
 
 
 
