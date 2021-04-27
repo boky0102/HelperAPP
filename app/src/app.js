@@ -351,6 +351,10 @@ function App (){
                                                     <Messager />
                                                 </Route>
 
+                                                <Route path="/home/myjobs">
+                                                    <Myprofile />
+                                                </Route>
+
                                             </Switch>
                                         </Box>
                                     </Grid>

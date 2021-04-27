@@ -113,11 +113,13 @@ const jobSchema = new mongoose.Schema({
 const Job = mongoose.model('Job', jobSchema);
 
 const messageSchema = new mongoose.Schema({
-    from: String,
-    to: String,
-    viewedBySender: Boolean,
-    viewedByReciever: Boolean,
-    message: String
+    user1: String,
+    user2: String,
+    messCount: Number,
+    messages: [{
+        sender: String,
+        message: String
+    }]
 });
 
 const Message = mongoose.model('Message', messageSchema);
@@ -695,17 +697,53 @@ app.post("/message", [auth.isAuth] , (req,res) => {
     const reciever = req.body.reciever;
     console.log(username, "-", reciever, ":", message);
 
-    if(username !== "" && message !== "" && reciever !== ""){
-        const newMessage = new Message;
-        newMessage.from = username;
-        newMessage.to = reciever;
-        newMessage.message = message;
-        newMessage.save();
-        res.status(200).send();
-    }
-    else{
-        res.status(400).send();
-    }
+    Message.findOne().or([{user1: username, user2: reciever},{user2: username, user1: reciever}])
+    .then((mess) => {
+        if(!mess){
+            const newMessage = new Message;
+            newMessage.user1 = username;
+            newMessage.user2 = reciever;
+            newMessage.messCount = 1;
+            newMessage.messages.push(
+                {
+                    sender: username,
+                    message: message
+                }
+            );
+            newMessage.save();
+            res.status(200).send();
+            
+        }
+        else if(mess){
+            mess.messCount += 1;
+            mess.messages.push(
+                {
+                    sender: username,
+                    message: message
+                }
+            );
+            mess.save();
+            res.status(200).send();
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+    })
+
+    
+})
+
+app.get("/inbox", [auth.isAuth], (req,res) => {
+    const username = req.jwt.userName;
+    Message.find().or([{user1: username}, {user2: username}])
+    .then((messages) => {
+        if(messages){
+            res.send(messages);
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+    })
 })
 
 
