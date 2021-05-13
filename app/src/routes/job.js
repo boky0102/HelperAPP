@@ -9,6 +9,8 @@ import axios from "axios";
 import SendIcon from '@material-ui/icons/Send';
 import Cookies from 'universal-cookie';
 import Alert from "@material-ui/lab/Alert";
+import noreviews from "../static/no_review.svg"
+import Apply from "./apply";
 
 
 
@@ -59,6 +61,7 @@ function Job(props){
     const [sideBox, setSideBox] = useState("reviews");
     const [message, setMessage] = useState("");
     const [mess, messageSent] = useState();
+    const [avatarSrc, setAvatarSrc] = useState("");
   
 
     function handleImgHeight(event){
@@ -76,7 +79,9 @@ function Job(props){
         .then((response) => {
             setReviews(response.data.userData.reviews);
             setJobData(response.data.jobData);
-            setName(response.data.userData.name)
+            setName(response.data.userData.name);
+            setAvatarSrc("http://localhost:3001/" + response.data.userData.avatarSrc);
+            console.log("User data :",response.data.userData);
         })
         .catch((err) => {
             console.log(err);
@@ -123,7 +128,9 @@ function Job(props){
         }
         else{
           return(
-            <Typography>No reviews yet</Typography>
+            <Box display="flex" justifyContent="center">
+              <img src={noreviews} alt="no review" alignSelf="center"></img>
+            </Box>
           )
         }
       }
@@ -131,7 +138,7 @@ function Job(props){
         return(
           <div>
             
-              <Box  display="flex" m={4} flexDirection="column"   >
+              <Box  display="flex" m={4} flexDirection="column"  >
                     <Box >
                       <form onSubmit={handleMessageSubmit}>
                         <TextField  className={classes.messBox} required fullWidth rows="7" multiline variant="outlined" color="secondary" label="Message" size="large" onChange={handleMessageChange} 
@@ -143,14 +150,7 @@ function Job(props){
                     </Box>
                       {mess === true && <Alert >Message Sent Succesfully</Alert>}
                       {mess === false && <CircularProgress></CircularProgress>}
-                      
-                    
-                  
-
-          
-                  
-
-                  
+                           
               </Box>
             
             <Box>
@@ -161,8 +161,9 @@ function Job(props){
         )
       }
       else if(sideBox === "apply"){
+        
         return(
-          <Typography>Apply</Typography>
+          <Apply id={id}></Apply>
         )
       }
     }
@@ -265,7 +266,7 @@ function Job(props){
                   </Typography>
                 </Box>
                 <Box m={1} alignSelf="center">
-                  <Avatar src={picture} className={classes.avatStyle}></Avatar>
+                  <Avatar src={avatarSrc} className={classes.avatStyle}></Avatar>
                 </Box>
                 <Box>
                   <Button fullWidth onClick={(e) => setSideBox("message")}>MESSAGE</Button>

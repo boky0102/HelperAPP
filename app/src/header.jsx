@@ -6,6 +6,9 @@ import avat from "./static/picture.jpg";
 import theme from "./theme";
 import logo from "./static/drawing2.svg";
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import { useContext, useEffect, useState } from "react";
+import UserContext from "./userContext";
+import axios from "axios";
 
 const useStyles = makeStyles({
     typographySyles: {
@@ -41,15 +44,30 @@ const useStyles = makeStyles({
     
 })
 
+
+
 function Header(props){
     const classes = useStyles();
+    const username = useContext(UserContext);
+    const [avatSrc, setAvat] = useState("");
+
+    useEffect(() => {
+        const url = "http://localhost:3001/avatar/" + username;
+        axios.get(url)
+        .then((response) => {
+            setAvat(response.data);
+        })
+        .catch(err => console.log(err));
+    },[username])
+
+
     return(
         <AppBar  position="static" className={classes.appBarStyle}>
             
             <Toolbar className={classes.toolbarStyle}>
                 
                     <Box my={2}>
-                        <Avatar src={avat} className={classes.avatarStyoes}></Avatar>
+                        <Avatar src={avatSrc} className={classes.avatarStyoes}></Avatar>
                     </Box>
                     <Box p={1} mx={2}>
                         <img alt="helper logo" src={logo} className={classes.logoStyle}/>

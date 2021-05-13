@@ -27,6 +27,8 @@ import Myprofile from "./routes/myProfile";
 import NewJob from "./routes/newJob";
 import Job from "./routes/job";
 import Cookies from "universal-cookie";
+import Apply from "./routes/apply";
+import Jobs from "./routes/jobs";
 
 
 
@@ -324,7 +326,7 @@ function App (){
                                         <Link to="/home/find"><Button size="large" color="secondary" fullWidth>FIND JOB</Button></Link>
                                         <Link to="/home/post"><Button size="large" color="secondary" fullWidth>POST JOB</Button></Link>
                                         <Link to="/home/messages"><Button size="large" color="secondary" fullWidth>MESSAGES</Button></Link>
-                                        <Link to="/home/myjobs"><Button size="large" color="secondary" fullWidth>MY JOBS</Button></Link>
+                                        <Link to="/home/jobs"><Button size="large" color="secondary" fullWidth>MY JOBS</Button></Link>
                                         <Link to="/home/myprofile"><Button size="large" color="secondary" fullWidth>MY PROFILE</Button></Link>
                                     </Grid>
 
@@ -351,8 +353,16 @@ function App (){
                                                     <Messager />
                                                 </Route>
 
-                                                <Route path="/home/myjobs">
+                                                <Route path="/home/myprofile">
                                                     <Myprofile />
+                                                </Route>
+
+                                                <Route path="/home/apply">
+                                                    <Apply></Apply>
+                                                </Route>
+
+                                                <Route path="/home/jobs">
+                                                    <Jobs></Jobs>
                                                 </Route>
 
                                             </Switch>

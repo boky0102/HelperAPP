@@ -7,6 +7,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import JobCard from "../components/jobCard";
 import UserContext from "../userContext";
 import axios from "axios";
+import MyJobCard from "../components/myJobCard"
 
 const dotenv = require('dotenv');
 
@@ -229,40 +230,42 @@ function Find(props){
             <Grid container item xs={12}>
                 
                 <AppBar position="relative" >
-                <Toolbar className={classes.searchToolbarStyle}>
+                <Toolbar className={classes.searchToolbarStyle} >
                     <form noValidate onSubmit={handleSearchSubmit}>
-                    <Grid container direction="column">
-                        <Grid item xs={12}>
-                            <Box mt={2} mb={1}>
-                            <TextField onChange={handleSearchChange} name="title" color="secondary" fullWidth="true" id="standard-basic" size="medium" placeholder="Search by title"></TextField>
-                            </Box>
-                        </Grid>
+                    <Grid container direction="column" xs={12}>
+                        
+                            <Grid item xs={12}>
+                                <Box mt={2} mb={1}>
+                                    <TextField onChange={handleSearchChange} name="title" color="secondary" fullWidth="true" id="standard-basic" size="medium" placeholder="Search by title"></TextField>
+                                </Box>
+                            </Grid>
 
-                        <Grid item>
-                            <Box pb={2}>
-                            <FormControl className={classes.formControl}>
-                                <InputLabel  color="secondary">Category</InputLabel>
-                                    <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={category}
-                                    onChange={handleChangeCategory}
-                                    color="secondary"
-                                    >
-                                        <MenuItem value={"Any"}>Any</MenuItem>
-                                        <MenuItem value={"Digital"}>Digital</MenuItem>
-                                        <MenuItem value={"Hard Labour"}>Hard Labour</MenuItem>
-                                        <MenuItem value={"Cleaning"}>Cleaning</MenuItem>
-                                        <MenuItem value={"Gardening"}>Gardening</MenuItem>
-                                        <MenuItem value={"Driving"}>Driving</MenuItem>
-                                        <MenuItem value={"Teaching"}>Teaching</MenuItem>
-                                        <MenuItem value={"Furniture moving"}>Furniture moving</MenuItem>
-                                        <MenuItem value={"Furniture building"}>Furniture Building</MenuItem>
-                                        <MenuItem value={"Machine fixing"}>Machine fixing</MenuItem>
-                                        <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
-                                     </Select>
-                             </FormControl>
-                            </Box>
+                            <Grid item>
+                                <Box pb={2}>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel  color="secondary">Category</InputLabel>
+                                        <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={category}
+                                        onChange={handleChangeCategory}
+                                        color="secondary"
+                                        >
+                                            <MenuItem value={"Any"}>Any</MenuItem>
+                                            <MenuItem value={"Digital"}>Digital</MenuItem>
+                                            <MenuItem value={"Hard Labour"}>Hard Labour</MenuItem>
+                                            <MenuItem value={"Cleaning"}>Cleaning</MenuItem>
+                                            <MenuItem value={"Gardening"}>Gardening</MenuItem>
+                                            <MenuItem value={"Driving"}>Driving</MenuItem>
+                                            <MenuItem value={"Teaching"}>Teaching</MenuItem>
+                                            <MenuItem value={"Furniture moving"}>Furniture moving</MenuItem>
+                                            <MenuItem value={"Furniture building"}>Furniture Building</MenuItem>
+                                            <MenuItem value={"Machine fixing"}>Machine fixing</MenuItem>
+                                            <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
+                                        </Select>
+                                </FormControl>
+                                </Box>
+                            
                         </Grid>
 
                         
@@ -297,7 +300,7 @@ function Find(props){
 
                 {jobData.map((job) => (
                     <Box width="inherit"    borderTop={1} borderColor="grey.200">
-                        <JobCard id={job._id} title={job.title} distance={job.distance} imgSrc={makeImgURL(job.imgSrc)} description={job.description.substring(0,60)+"..."} budget={job.budget} category={job.category} deadline={job.deadline} />
+                        <MyJobCard id={job._id} title={job.title} distance={job.distance} imgSrc={job.imgSrc} description={job.description.substring(0,150)+"..."} budget={job.budget + "€"} category={job.category} deadline={job.deadline} isPublic={true} />
                     </Box>
                 ))}
 

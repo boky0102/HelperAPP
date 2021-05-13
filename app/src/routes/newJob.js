@@ -74,23 +74,7 @@ function NewJob(){
         setCategory(event.target.value);
     }
 
-    function handleAdressChange(event){
-        setAdress(event.target.value);
-        console.log(currentAdress);
-        
-
-        const url = "http://localhost/find-adress/"+currentAdress;
-        
-        axios.get(url).then(
-            (response) => {
-                setArrayAdress(response.data);
-            }
-        ).catch((err) => {
-            console.log(err);
-        })
-        
-
-    }
+  
 
     function handleImageChange(event){
         
@@ -198,13 +182,6 @@ function NewJob(){
                 })
             break;
 
-            /* case "image":
-                setJobData((prevData) => {
-                    return{
-                        ...prevData,
-                        img: imgSrc
-                    }
-                }) */
 
         }
         console.log(jobData);

@@ -80,7 +80,14 @@ const userSchema = new mongoose.Schema({
         x: Number,
         y: Number
     },
-    reviews: []
+    reviews: [],
+    whatsapp: Boolean,
+    facebook: Boolean,
+    viber: Boolean,
+    facebookURL: String,
+    avatar: String,
+    phonePref: String,
+    phonePost: String
 
 })
 
@@ -103,7 +110,15 @@ const jobSchema = new mongoose.Schema({
         x: Number,
         y: Number
     },
-    distance: String
+    distance: String,
+    applications: [{
+        username: String,
+        dates: [String],
+        applicationDate: [String],
+        message: [String]
+    }],
+    scheduled: Boolean,
+    worker: String
 
 
 });
@@ -115,10 +130,13 @@ const Job = mongoose.model('Job', jobSchema);
 const messageSchema = new mongoose.Schema({
     user1: String,
     user2: String,
+    user1Avatar: String,
+    user2Avatar: String,
     messCount: Number,
     messages: [{
         sender: String,
-        message: String
+        message: String,
+        date: String
     }]
 });
 
@@ -345,6 +363,8 @@ app.get("/tajna", [auth.isAuth], (req,res) => {
 
 
 
+
+
 app.post("/newJob", upload.single("productImage") ,(req,res) => {
 
 
@@ -363,7 +383,8 @@ app.post("/newJob", upload.single("productImage") ,(req,res) => {
         streetAndNum: req.body.streetAndNum,
         city: req.body.city,
         country: req.body.country,
-        imgSrc: imgPathPretty
+        imgSrc: imgPathPretty,
+        scheduled: false
     });
 
     const url = 'https://wft-geo-db.p.rapidapi.com/v1/geo/cities';
@@ -416,7 +437,15 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
 
         if(req.params.category === "none" && req.params.distance === "none" && req.params.username === "none"){
             Job.find({}, (err, jobs) => {
-                res.send(jobs)
+                const filteredJobs = [];
+                
+                jobs.forEach((job) => {
+                    if(job.scheduled === false){
+                        filteredJobs.push(job)
+                    }
+                })
+
+                res.send(filteredJobs)
             })
 
         }
@@ -523,6 +552,44 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                     })
                     if(filteredJobs.length>0){
                         res.send(filteredJobs);
+                    }
+                    else{
+                        res.status(404).send();
+                    }
+                }
+            })
+        }
+
+        else if(req.params.category !== "none" && req.params.distance === "none" && req.params.username !== "none"){
+            Job.find({category: req.params.category}, (err, jobs) => {
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    if(jobs){
+                        User.findOne({userName: req.params.username}, (err, user) => {
+                            if(err){
+                                console.log(err)
+                            }
+                            else{
+                                if(user){
+
+                                    const filteredJobs = [];
+                                    jobs.forEach((job) => {
+                                        console.log(job.username, " ", req.params.username);
+                                        if (job.username != req.params.username){
+                                        filteredJobs.push(job);
+                                        }
+                                    })
+                
+                                    res.send(filteredJobs);
+
+                                }
+                                else{
+                                    res.status(404).send();
+                                }
+                            }
+                        })
                     }
                     else{
                         res.status(404).send();
@@ -649,6 +716,35 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
             })
         }
 
+        else if(req.params.category !== "none" && req.params.distance === "none" && req.params.username !== "none"){
+            Job.find({category: req.params.category}, (err, jobs) => {
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    if(jobs){
+                        const filteredJobs = [];
+                        jobs.forEach((job) => {
+                            if(job.username !== req.params.username){
+                                filteredJobs.push(job);
+                            }
+                        
+                        })
+
+                        if(filteredJobs.length > 0){
+                            filterJobsByTitle(filteredJobs, req.params.title)
+                            .then((response) => {
+                                res.send(response);
+                            });
+                        }
+                    }
+                    else{
+                        res.status(404).send();
+                    }
+                }
+            })
+        }
+
     }
 
     
@@ -673,8 +769,8 @@ app.get("/job/:id", (req,res) => {
                         userData: {
                             name: user.firstAndLastName,
                             username: user.userName,
-                            reviews: user.reviews
-    
+                            reviews: user.reviews,
+                            avatarSrc: user.avatar    
                         }
                     }
                     res.send(data);
@@ -700,6 +796,7 @@ app.post("/message", [auth.isAuth] , (req,res) => {
     Message.findOne().or([{user1: username, user2: reciever},{user2: username, user1: reciever}])
     .then((mess) => {
         if(!mess){
+
             const newMessage = new Message;
             newMessage.user1 = username;
             newMessage.user2 = reciever;
@@ -746,12 +843,273 @@ app.get("/inbox", [auth.isAuth], (req,res) => {
     })
 })
 
+app.get("/conversation/:id", [auth.isAuth], (req,res) => {
+    const username = req.jwt.username;
+    Message.findOne({_id: req.params.id}, (err, conversation) => {
+        if(err){
+            console.log(err);
+        }
+        else if(conversation){
+            res.send(conversation.messages)
+        }
+        else{
+            res.status(404).send();
+        }
+    })
+})
+
+app.post("/conversation/message", [auth.isAuth], (req,res) => {
+    const username = req.jwt.userName;
+    const id = req.body.id;
+    const sentMessage = req.body.message;
+
+    console.log("Message recieved :", sentMessage);
+
+    Message.findOne({_id: id}, (err, conversation) => {
+        if(err){
+            console.log(err);
+        }
+        else if(conversation){
+            conversation.messages.push({sender: username, message: sentMessage, date: Date.now()});
+            conversation.save();
+            console.log("Message saved");
+            res.status(200).send();
+        }
+        else{
+            res.status(404).send();
+        }
+
+    })
+})
+
+app.post("/profileChange", [auth.isAuth], upload.single("image"), (req,res) => {
+    const username = req.jwt.userName;
+    User.findOne({userName: username}, (err, user) => {
+        if(err){
+            res.status(404).send()
+        }
+        else{
+            if(user){
+                if(req.body.name !== ""){
+                    user.name = req.body.name;
+                }
+                if(req.body.streetAndNum !== ""){
+                    user.streetAndNum = req.body.streetAndNum;
+                }
+                if(req.body.city !== ""){
+                    user.city = req.body.city;
+                }
+                if(req.body.country !== ""){
+                    user.country = req.body.country;
+                }
+                if(req.body.facebook !== user.facebook){
+                    user.facebook = req.body.facebook;
+                }
+                if(req.body.whatsapp !== user.whatsapp){
+                    user.whatsapp = req.body.whatsapp;
+                }
+                if(req.body.viber !== user.viber){
+                    user.viber = req.body.viber;
+                }
+                if(req.body.facebookURL !== ""){
+                    user.facebookURL = req.body.facebookURL;
+                }
+                if(req.body.phonePref !== ""){
+                    user.phonePref = req.body.phonePref;
+                }
+                if(req.body.phonePost !== ""){
+                    user.phonePost = req.body.phonePost;
+                }
+                if(req.file !== undefined){
+                    const imgPathPretty = req.file.path.replace("\\", "/");
+                    user.avatar = imgPathPretty;
+                }
+                
+                user.save();
+                res.status(200).send();
+            }
+            else{
+                res.status(404).send();
+            }
+        }
+    })
+})
+
+app.get("/user", [auth.isAuth], (req,res) => {
+    const username = req.jwt.userName;
+    User.findOne({userName: username}, (err, user) => {
+        if(err){
+            res.status(404).send()
+        }
+        else{
+            if(user){
+                const responseData = user;
+                responseData.password = "";
+                res.send(JSON.stringify(responseData));
+            }
+        }
+    })
+})
+
+app.get("/userData/:username", [auth.isAuth], (req,res) => {
+    const username = req.params.username;
+    User.findOne({userName: username}, (err, user) => {
+        if(err){
+            console.log(err)
+        }
+        else{
+            if(user){
+                const responseData = user;
+                responseData.password = "";
+                res.send(JSON.stringify(responseData));
+            }
+            else{
+                res.status(404).send();
+            }
+        }
+        
+    })
+})
 
 
+app.get("/avatar/:username", (req,res) => {
+    const username = req.params.username;
+    User.findOne({userName: username}, (err, user) => {
+        if(err){
+            res.status(404).send();
+        }
+        else{
+            if(user){
+                if(user.avatar !== ""){
+                    res.send("http://localhost:3001/"+user.avatar)
+                }
+                else{
+                    res.status(404).send();
+                }
+            }
+            else{
+                res.status(404).send();
+            }
+        }
+    })
+})
 
+app.post("/job/apply", [auth.isAuth], (req,res) => {
+    const username = req.jwt.userName;
+    const jobId = req.body.id;
+    const message = req.body.message;
+    const dates = req.body.dates;
 
+    Job.findOne({_id: jobId}, (err, job) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            if(job){
+                let flag = false;
+                job.applications.forEach((application) => {
+                    if(application.username === username){
+                        flag = true;
+                    }
+                })
 
+                if(flag){
+                    res.status(402).send();
+                }
+                else{
 
+                    const newApplication = {
+                        username: username,
+                        dates: dates,
+                        applicationDate: new Date(),
+                        message: message
+                    };
+                    job.applications.push(newApplication);
+                    job.save();
+                    res.status(200).send();
+
+                }
+
+               
+            }
+            else{
+                res.status(404).send()
+            }
+        }
+    })
+
+    
+
+})
+
+app.get("/myjobs", [auth.isAuth], (req,res) => {
+    const username = req.jwt.userName;
+    Job.find({username: username}, (err, jobs) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            if(jobs){
+                const filteredJobs = [];
+                jobs.forEach((job) => {
+                    if(job.scheduled !== true){
+                        filteredJobs.push(job);
+                    }
+                })
+                res.send(filteredJobs);
+            }
+            else{
+                res.status(404).send();
+            }
+        }
+    })
+})
+
+app.get("/myScheduledJobs", [auth.isAuth], (req,res) => {
+    const username = req.jwt.userName;
+    Job.find({username: username}, (err, jobs) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            if(jobs){
+                const filteredJobs = [];
+                jobs.forEach((job) => {
+                    if(job.scheduled === true){
+                        filteredJobs.push(job);
+                    }
+                })
+                res.send(filteredJobs);
+            }
+            else{
+                res.status(404).send();
+            }
+        }
+    })
+})
+
+app.post("/jobs/accepted", [auth.isAuth], (req,res) => {
+    console.log(req.body);
+    const worker = req.body.user;
+    const jobId = req.body.jobId;
+
+    Job.findOne({_id: jobId}, (err, job) => {
+        if(err){
+            console.log(err);
+        }
+        else {
+            if(job){
+                job.scheduled = true;
+                job.worker = worker;
+                job.save();
+                res.status(200).send();
+            }
+            else{
+                res.status(404).send();
+            }
+        }
+    })
+})
 
 
 
