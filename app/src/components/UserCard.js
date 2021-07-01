@@ -1,11 +1,11 @@
-import { Avatar, Box, Button, Card, makeStyles, TextField, Typography, useTheme, IconButton, CircularProgress } from "@material-ui/core";
+import { Avatar, Box, Button, Card, makeStyles, TextField, Typography, useTheme, IconButton } from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import SendIcon from '@material-ui/icons/Send';
 import PhoneIcon from '@material-ui/icons/Phone';
 import axios from "axios";
 import Cookie from "universal-cookie";
-import { Alert } from "@material-ui/lab";
+import { Alert, Rating } from "@material-ui/lab";
 
 function UserCard(props){
     const cookies = new Cookie();
@@ -40,6 +40,9 @@ function UserCard(props){
             formStyle:{
                 margin: "0px",
                 padding: "0px"
+            },
+            buttonDone:{
+                backgroundColor: theme.palette.primary.dark
             }
             
         }
@@ -51,9 +54,15 @@ function UserCard(props){
         started: false,
         finished: false
     });
+    const [review, setReview] = useState("");
+    const [ratingValue, setRating] = useState(0);
+
+    const [finishedClick, setFinishedClick] = useState(false);
+    const [alert, setAlert] = useState("");
 
     function handleMessageClick(event){
         setMessageClicked(!messageClicked);
+        setFinishedClick(false);
     }
 
     function handleMessageSent(event){
@@ -79,6 +88,47 @@ function UserCard(props){
         setMessage(event.target.value);
     }
 
+    function handleCompletedClick(){
+        setFinishedClick(true);
+        setMessageClicked(false);
+
+    }
+
+    function handleReviewChange(event){
+        setReview(event.target.value);
+        setAlert("");
+    }
+
+    function handleReviewSubmit(event){
+        event.preventDefault();
+        if(ratingValue !== 0){
+            const url = "http://localhost:3001/jobfinished";
+            const token = cookies.get('token');
+            const data = {
+                reviewMessage: review,
+                worker: props.worker,
+                rating: ratingValue
+            }
+            axios.post(url, data, {headers: {'authorization' : `Bearer ${token}`}})
+            .then((response) => {
+                if(response.status === 200){
+                    
+                }
+            })
+            .catch(err => console.log(err));
+
+
+        }
+        else{
+            setAlert("Please choose rating");
+        }
+        
+    }
+
+    function handleRatingChange(event, newValue){
+        setRating(newValue);
+    }
+
     const classes = useStyles();
 
     if(props.isPublic === false){
@@ -93,15 +143,16 @@ function UserCard(props){
                                 </Avatar>
                             </Box>
                             <Box display="flex" width="100%" className={classes.cardStyle}  flexDirection="row" justifyContent="space-around">
-                                <Box alignSelf="center" mt={1}>
-                                    <Typography>{workerData.firstAndLastName}</Typography>
+                                <Box alignSelf="center" display="flex" justifyContent="center" flexDirection={"column"}>
+                                    <Typography align="center">{workerData.firstAndLastName}</Typography>
+                                    <Button alignSelf="center" variant="outlined" color="secondary" onClick={handleMessageClick}><Typography>Message</Typography></Button>
                                 </Box>
                                 <Box alignSelf="center" mt={1} display="flex">
                                     <PhoneIcon></PhoneIcon>
                                     <Typography>{workerData.phonePref + " "} {workerData.phonePost}</Typography>
                                 </Box>
                                 <Box alignSelf="center" my={1}>
-                                    <Button variant="outlined" color="secondary" onClick={handleMessageClick}><Typography>Message</Typography></Button>
+                                    <Button variant="contained" onClick={handleCompletedClick} className={classes.buttonDone}>COMPLETED ?</Button>
                                 </Box>
                             </Box>
                         </Box>
@@ -110,7 +161,7 @@ function UserCard(props){
                     <Box width="100%" display="flex" justifyContent="center">
                         <Box width="100%" ml={2} mr={2} mb={2}>
                             <form className={classes.formStyle} onSubmit={handleMessageSent}>
-                                <TextField required onChange={handleMessageChange} multiline rows="3" fullWidth variant="outlined" InputProps={{endAdornment:
+                                <TextField required onChange={handleMessageChange} label="Send a message" multiline rows="3" fullWidth variant="outlined" InputProps={{endAdornment:
                                     <IconButton type="submit">
                                     <SendIcon></SendIcon>
                                     </IconButton>}}></TextField>
@@ -119,6 +170,26 @@ function UserCard(props){
                     </Box>
                     }
                     {(loading.started === false && loading.finished === true) && <Alert type="success">Message sent successfully</Alert>}
+
+                    {finishedClick &&
+                         <Box width="100%" display="flex" justifyContent="center">
+                         <Box width="100%" ml={2} mr={2} mb={2}>
+                             <form className={classes.formStyle} onSubmit={handleReviewSubmit}>
+                                 <TextField required onChange={handleReviewChange} label="Write a review" multiline rows="3" fullWidth variant="outlined" InputProps={{endAdornment:
+                                     <IconButton type="submit">
+                                     <SendIcon></SendIcon>
+                                     </IconButton>}}></TextField>
+                                <Box mt={1} mb={1} display="flex">
+                                    <Typography>Rating :</Typography>
+                                    <Rating value={ratingValue} onChange={handleRatingChange}></Rating>
+                                </Box>
+                                <Box>
+                                    {alert !== "" && <Alert severity="error">{alert}</Alert>}
+                                </Box>
+                             </form>
+                         </Box>
+                     </Box>
+                    }
 
                 </Card>
             </Box>

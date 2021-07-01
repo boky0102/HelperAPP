@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { Box, Grid, Button, Typography, makeStyles, Card, CardActionArea, IconButton } from "@material-ui/core";
 import Cookies from "universal-cookie";
 import axios from "axios";
@@ -84,6 +84,7 @@ function Messager(){
     console.log(currentMessage);
 
     const history = useHistory();
+
 
     
     

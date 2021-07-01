@@ -20,7 +20,10 @@ import {
   Route,
   Link
 } from "react-router-dom";
-import logo from './static/logo.png'
+
+import background from './static/background_blur.png'
+
+import logo from './static/logo.svg'
 
 function Copyright() {
   return (
@@ -37,33 +40,49 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh',
+    backgroundImage: `url(${background})`,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%'
   },
-  image: {
-    backgroundImage: 'url(https://source.unsplash.com/random)',
-    backgroundRepeat: 'no-repeat',
-    backgroundColor:
-      theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  },
+  
   paper: {
     margin: theme.spacing(8, 4),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'center',   
+    background: `linear-gradient(
+      to right bottom,
+      rgba(255, 255, 255, 0.5),
+      rgba(255, 255, 255, 0.2)
+    )`,
+    borderRadius: "15px",
+    padding: theme.spacing(5),
+    [theme.breakpoints.down('md')]: {
+      height: "90%",
+      justifyContent: 'flex-start'
+    },
+    
+     
+    
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: '100%',
     marginTop: theme.spacing(1),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  logo: {
+    width: "5%",
+    height: "5%"
+  }
 }));
 
 export default function Register(props) {
@@ -73,14 +92,14 @@ export default function Register(props) {
  
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+      
+      <Grid item xs={12} sm={8} md={5} elevation={6} square>
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <img src={logo}></img>
-          </Avatar>
+          
+          <img src={logo} className={classes.logo} alt="Logo"></img>
+          
           <Typography component="h1" variant="h5">
-            Sign in
+            Register
           </Typography>
           <form className={classes.form} onSubmit={props.handleRegSubmit} >
             <TextField
@@ -95,6 +114,7 @@ export default function Register(props) {
               name="username"
               autoComplete="email"
               autoFocus
+              size="small"
             />
             <TextField
               required
@@ -108,6 +128,7 @@ export default function Register(props) {
               type="password"
               id="password"
               autoComplete="current-password"
+              size="small"
             />
             
             <TextField
@@ -122,6 +143,7 @@ export default function Register(props) {
               type="password"
               id="password"
               autoComplete="current-password"
+              size="small"
             />
 
             <TextField
@@ -136,6 +158,7 @@ export default function Register(props) {
               type="text"
               id="password"
               autoComplete="current-password"
+              size="small"
             />
 
             <TextField
@@ -150,6 +173,7 @@ export default function Register(props) {
               type="text"
               id="password"
               autoComplete="current-password"
+              size="small"
             />
 
             <TextField
@@ -164,6 +188,7 @@ export default function Register(props) {
               type="text"
               id="password"
               autoComplete="current-password"
+              size="small"
             />
 
             <TextField
@@ -178,6 +203,7 @@ export default function Register(props) {
               type="text"
               id="password"
               autoComplete="current-password"
+              size="small"
             />
 
 
@@ -185,6 +211,7 @@ export default function Register(props) {
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
+              size="small"
             />
             <Button
               type="submit"
@@ -192,6 +219,7 @@ export default function Register(props) {
               variant="contained"
               color="primary"
               className={classes.submit}
+              size="small"
             >
               Register
             </Button>
@@ -209,9 +237,7 @@ export default function Register(props) {
                 
               </Grid>
             </Grid>
-            <Box mt={5}>
-              <Copyright />
-            </Box>
+            
           </form>
         </div>
       </Grid>

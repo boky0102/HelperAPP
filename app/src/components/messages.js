@@ -1,8 +1,7 @@
 import { Grid, Box, Avatar, Typography, makeStyles } from "@material-ui/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react"
-import avatar from "../static/picture.jpg"
-import UserContext from "../userContext";
+
 
 
 function Message(props){

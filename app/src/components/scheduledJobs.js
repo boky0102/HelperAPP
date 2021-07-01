@@ -24,9 +24,10 @@ function ScheduledJobs(){
 
     }, [])
 
+
     return(
         <Box>
-            {jobData.map((job) => <MyJobCard worker={job.worker} isScheduled={true} imgSrc={job.imgSrc} budget={job.budget + "€"} description={job.description} title={job.title} category={job.category} deadline={job.deadline} jobId={job._id}></MyJobCard>)}
+            {jobData.map((job) => <MyJobCard  worker={job.worker} isScheduled={true} imgSrc={job.imgSrc} budget={job.budget + "€"} description={job.description} title={job.title} category={job.category} deadline={job.deadline} jobId={job._id}></MyJobCard>)}
         </Box>
     )
 

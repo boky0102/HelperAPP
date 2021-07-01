@@ -407,11 +407,11 @@ function NewJob(){
                 <Grid item>
                     <Box my={2}>
                     <input
+
                         name="image"
                         accept="image/*"
                         className={classes.input}
-                        id="contained-button-file"
-                        
+                        id="contained-button-file"     
                         type="file"
                         onChange={handleImageChange}
               

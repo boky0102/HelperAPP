@@ -7,7 +7,8 @@ import {
     Switch,
     Route,
     Redirect,
-    Link
+    Link,
+    useHistory
   } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -57,6 +58,8 @@ function App (){
     const [logError, setLogError] = useState("");
     const [currentUser, setCurrentUser] = useState("");
     const [currentPage, setCurrentPage] = useState("/home");
+
+    const history = useHistory();
     
 
     function checkCookie(){
@@ -187,8 +190,9 @@ function App (){
                 }
                 else if(response.data === "OK"){
                     
-                    setAuthentication(true);
+                    
                     setCurrentUser(data.username);
+                    history.goBack()
 
                 }
                 

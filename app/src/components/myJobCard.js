@@ -30,6 +30,8 @@ function MyJobCard(props){
                 
             },
             iconStyleClose:{
+                transitionTimingFunction: "ease-in-out",
+                transition: "0.7s",
                 transform: "rotate(0deg)"
             },
             titleAndButton: {
@@ -147,7 +149,7 @@ function MyJobCard(props){
         }
 
         {props.isScheduled !== undefined && 
-            <UserCard worker={props.worker} isPublic={false}></UserCard>
+            <UserCard worker={props.worker}  jobId={props.jobId} isPublic={false}></UserCard>
             
         }
         </Box>

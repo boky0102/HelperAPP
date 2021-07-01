@@ -1,6 +1,6 @@
 import { Avatar, Box, Grid, makeStyles, TextField, Typography, IconButton } from "@material-ui/core";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Cookies from "universal-cookie";
 import avatar from "../static/picture.jpg";
 import SendIcon from '@material-ui/icons/Send';
@@ -56,6 +56,7 @@ function Conversation(props){
         .then((response) => {
             console.log(response.data);
             setConData(response.data);
+            scrollToBottom();
 
             
         })
@@ -71,7 +72,6 @@ function Conversation(props){
         return new Promise((resolve,reject) => {
             for(var i=0; i<conversation.length; i++){
                 if(conversation[i].sender !== mailholder){
-                    console.log("U promisu",conversation[i].sender)
                     resolve(conversation[i].sender)
                 }
             }
@@ -129,6 +129,13 @@ function Conversation(props){
         console.log(message);
     }
 
+    const messagesEndRef = useRef(null)
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+
+
    
 
     function handleMessageSent(event){
@@ -139,12 +146,27 @@ function Conversation(props){
             message: message,
             id: props.id
         }
+
+        
+
+        
         
         axios.post(url, data, {headers: {'authorization': `Bearer ${token}`}})
         .then((response) => {
             if(response.status === 200){
-                console.log("Message sent");
                 setMessageSuccess(true);
+                setConData((prevConData) => {
+                    return[
+                        ...prevConData,
+                        {
+                            message: message,
+                            sender: props.mailHolder
+                        }
+                    ]
+                })
+                scrollToBottom();
+
+                setMessage("");
             }
             else{
                 console.log("Message not sent");
@@ -167,6 +189,7 @@ function Conversation(props){
                     {conversationData.map((message) => {
                         if(message.sender === props.mailHolder){
                             return(
+                                <div>
                                 <Box display="flex" flexDirection="row"  >
                                     <Box>
                                         <Avatar src={avatars.holderAvatarSrc} className={classes.avatStyle}></Avatar>
@@ -176,6 +199,8 @@ function Conversation(props){
                                         <Typography className={classes.textStyle}>{message.message}</Typography>
                                     </Box>
                                 </Box>
+                                <div ref={messagesEndRef}/>
+                                </div>
                             )
 
                         }
@@ -202,7 +227,7 @@ function Conversation(props){
                 <Box>
                     <form onSubmit={handleMessageSent}>
                         <Box ml={2} mr={2} >
-                            <TextField  required fullWidth rows="4" multiline variant="outlined" color="secondary" label="Message"  onChange={handleMessageChange} InputProps={{endAdornment:
+                            <TextField value={message}  required fullWidth rows="4" multiline variant="outlined" color="secondary" label="Message"  onChange={handleMessageChange} InputProps={{endAdornment:
                         <IconButton className={classes.sendBtn} type="submit">
                           <SendIcon></SendIcon>
                         </IconButton>}}>

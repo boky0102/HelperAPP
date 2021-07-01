@@ -80,7 +80,13 @@ const userSchema = new mongoose.Schema({
         x: Number,
         y: Number
     },
-    reviews: [],
+    reviews: [
+        {
+            reviewer: String,
+            note: String,
+            rating: Number
+        }
+    ],
     whatsapp: Boolean,
     facebook: Boolean,
     viber: Boolean,
@@ -293,6 +299,7 @@ app.post("/register", (req,res) =>{
                         
                         newUser.save();
 
+
                         res.send("OK")
                         }
                         else{
@@ -302,7 +309,7 @@ app.post("/register", (req,res) =>{
 
                 })
                 .catch(console.log("Bad request"));
-
+                res.send("OK")
                 
                 
                 
@@ -1044,6 +1051,7 @@ app.post("/job/apply", [auth.isAuth], (req,res) => {
 
 app.get("/myjobs", [auth.isAuth], (req,res) => {
     const username = req.jwt.userName;
+    console.log(username);
     Job.find({username: username}, (err, jobs) => {
         if(err){
             console.log(err);
@@ -1102,6 +1110,33 @@ app.post("/jobs/accepted", [auth.isAuth], (req,res) => {
                 job.scheduled = true;
                 job.worker = worker;
                 job.save();
+                res.status(200).send();
+            }
+            else{
+                res.status(404).send();
+            }
+        }
+    })
+})
+
+app.post("/jobfinished", [auth.isAuth], (req,res) => {
+    const reviewAbout = req.body.worker;
+
+    const reviewData = {
+        reviewer: req.jwt.userName,
+        note: req.body.reviewMessage,
+        rating: req.body.rating
+    }
+
+    User.findOne({userName: reviewAbout}, (err, user) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            if(user){
+                console.log("Posted ....");
+                user.reviews.push(reviewData);
+                user.save();
                 res.status(200).send();
             }
             else{
