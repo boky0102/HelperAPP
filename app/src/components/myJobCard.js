@@ -50,7 +50,7 @@ function MyJobCard(props){
     const history = useHistory();
     const [isClicked, clicked] = useState(false);
 
-    function handleCardClick(event){
+    function handleCardClick(){
 
         if(props.isScheduled !== true){
 
@@ -66,6 +66,7 @@ function MyJobCard(props){
         
     }
 
+    console.log("PROPS",props);
 
     return(
         <Box mt={3}>
@@ -111,9 +112,9 @@ function MyJobCard(props){
                                         </Box>
 
                                         <Box mx={3}>
-                                            <Typography>
+                                            
                                                 <Category category={props.category}></Category>
-                                            </Typography>
+                                            
                                         </Box>
 
                                         <Box ml={3} mr={3}>
@@ -136,17 +137,17 @@ function MyJobCard(props){
                 
             </CardActionArea>
         </Card>
-        {(isClicked && props.isPublic !== false) && 
-
+         {isClicked && 
             <Box mt={1}>
-                {props.application !== undefined && props.applications.map((application) => 
+                {props.applications !== undefined && props.applications.map((application) => 
                     
-                        <Application rerender={props.rerender} username={application.username} message={application.message} dates={application.dates} dateApplied={application.applicationDate} jobId={props.jobId}></Application>
+                        <Application rerender={props.rerender} username={application.username} message={application.message} dates={application.dates} dateApplied={application.applicationDate} jobId={props.jobId} workerId={application._id}></Application>
                     
                 ) }
             </Box>
-        
-        }
+        } 
+
+
 
         {props.isScheduled !== undefined && 
             <UserCard worker={props.worker}  jobId={props.jobId} isPublic={false}></UserCard>

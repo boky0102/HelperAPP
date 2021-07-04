@@ -30,6 +30,7 @@ import Job from "./routes/job";
 import Cookies from "universal-cookie";
 import Apply from "./routes/apply";
 import Jobs from "./routes/jobs";
+import Profile from "./routes/userProfile";
 
 
 
@@ -351,6 +352,10 @@ function App (){
 
                                                 <Route path="/home/job/:id">
                                                     <Job />
+                                                </Route>
+
+                                                <Route path="/home/profile/:id">
+                                                    <Profile></Profile>
                                                 </Route>
 
                                                 <Route path="/home/messages">

@@ -93,7 +93,7 @@ export default function Register(props) {
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
       
-      <Grid item xs={12} sm={8} md={5} elevation={6} square>
+      <Grid item xs={12} sm={8} md={5} elevation={6}>
         <div className={classes.paper}>
           
           <img src={logo} className={classes.logo} alt="Logo"></img>

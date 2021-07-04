@@ -1147,6 +1147,38 @@ app.post("/jobfinished", [auth.isAuth], (req,res) => {
 })
 
 
+app.get("/profileInfo/:id", [auth.isAuth], (req,res) => {
+
+    const id = req.params.id;
+    console.log(id);
+
+    User.findOne({userName: id}).then((user) => {
+        
+        if(user){
+
+            returnObject = {
+                name: user.firstAndLastName,
+                city: user.city,
+                country: user.country,
+                reviews: user.reviews,
+                jobsCompleted: user.reviews.length,
+                avatarSrc: user.avatar
+                
+            }
+    
+            res.send(returnObject);
+
+        }
+        else{
+            res.status(404).send();
+        }
+        
+
+    }).catch(err => console.log(err))
+
+    
+})
+
 
 
 

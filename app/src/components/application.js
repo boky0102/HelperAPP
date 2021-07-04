@@ -1,13 +1,16 @@
-import { Avatar, Box, Card, Icon, IconButton, makeStyles, Typography, useTheme } from "@material-ui/core";
+import { Avatar, Box, Card, Icon, IconButton, makeStyles, Typography, useTheme, Button } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import PickedDate from "./pickedDate";
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
 import axios from "axios";
 import Cookie from "universal-cookie";
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import { useHistory } from "react-router";
 
 
 function Application(props){
+
 
     const theme = useTheme();
 
@@ -39,6 +42,21 @@ function Application(props){
                 [theme.breakpoints.down('sm')] :{
                     alignSelf: "center"
                 }
+            },
+
+            headerRow:{
+                [theme.breakpoints.down('md')]:{
+                    flexDirection: "column"
+                }
+
+            },
+            nameProfile:{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+            },
+            profileButton:{
+                marginLeft: theme.spacing(3)
             }
         }
     )
@@ -46,8 +64,8 @@ function Application(props){
     const [avatSrc, setAvatSrc] = useState("");
 
     const prettyDate = new Date(props.dateApplied);
+    const history = useHistory();
 
-    console.log(prettyDate.getUTCDate());
     
 
     useEffect(() => {
@@ -90,6 +108,10 @@ function Application(props){
 
     }
 
+    function handleProfileButtonClick(){
+        history.push("profile/" + props.username);
+    }
+
     
 
     
@@ -110,8 +132,11 @@ function Application(props){
                     
                 </Box>
                 <Box width="100%"  display="flex" flexDirection="column" m={2}>
-                    <Box  width="inherit" display="flex" flexDirection="row" justifyContent="space-between">
-                        <Typography>Borna Ivankovic</Typography>
+                    <Box  width="inherit" display="flex" flexDirection="row" justifyContent="space-between" className={classes.headerRow}>
+                        <Box className={classes.nameProfile}>
+                            <Typography>Borna Ivankovic</Typography>
+                            <Button onClick={handleProfileButtonClick} className={classes.profileButton} variant="contained" color="primary" size="small" endIcon={<AccountCircleIcon></AccountCircleIcon>}>Profile</Button>
+                        </Box>
                         <Typography>Date applied :{prettyDate.toDateString()}</Typography>
                     </Box>
                     <Box mt={2} mr={2}>
