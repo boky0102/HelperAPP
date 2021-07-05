@@ -9,7 +9,12 @@ function Review(props){
         avatarStyle:{
             width: "50px",
             height: "50px"
+        },
+        
+        ratingWrap:{
+            width: "90%"
         }
+
         }
     );
 
@@ -17,7 +22,7 @@ function Review(props){
 
 
     return(
-        <Box display="flex" flexDirection="column" width="inherit" borderTop={1} borderColor={"grey.300"} mx={2}>
+        <Box className={classes.ratingWrap} display="flex" flexDirection="column" width="inherit" borderTop={1} borderColor={"grey.300"} mx={2}>
 
             <Box display="flex" flexDirection="row" width="inherit" justifyContent="space-between" m={1}>
                 <Typography>{props.name}</Typography>

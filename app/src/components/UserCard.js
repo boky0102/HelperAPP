@@ -6,6 +6,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import axios from "axios";
 import Cookie from "universal-cookie";
 import { Alert, Rating } from "@material-ui/lab";
+import { useHistory } from "react-router"
 
 function UserCard(props){
     const cookies = new Cookie();
@@ -14,6 +15,8 @@ function UserCard(props){
     console.log("Worker: ", props.worker);
 
     const [workerData, setWorkerData] = useState({});
+
+    const [jobCompleted, setJobCompleted] = useState(false);
 
     useEffect(() => {
         const url="http://localhost:3001/userData/" + props.worker;
@@ -99,6 +102,8 @@ function UserCard(props){
         setAlert("");
     }
 
+    const history = useHistory();
+
     function handleReviewSubmit(event){
         event.preventDefault();
         if(ratingValue !== 0){
@@ -107,12 +112,16 @@ function UserCard(props){
             const data = {
                 reviewMessage: review,
                 worker: props.worker,
-                rating: ratingValue
+                rating: ratingValue,
+                jobId: props.jobId
             }
             axios.post(url, data, {headers: {'authorization' : `Bearer ${token}`}})
             .then((response) => {
                 if(response.status === 200){
-                    
+                    setJobCompleted(true);
+                    setTimeout(() => {
+                        history.push("/home/find");
+                    }, 3000)
                 }
             })
             .catch(err => console.log(err));
@@ -185,6 +194,7 @@ function UserCard(props){
                                 </Box>
                                 <Box>
                                     {alert !== "" && <Alert severity="error">{alert}</Alert>}
+                                    {jobCompleted && <Alert severity="success">Review posted successfully, redirecting ...</Alert>}
                                 </Box>
                              </form>
                          </Box>

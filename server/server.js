@@ -124,7 +124,8 @@ const jobSchema = new mongoose.Schema({
         message: [String]
     }],
     scheduled: Boolean,
-    worker: String
+    worker: String,
+    completed: Boolean
 
 
 });
@@ -391,7 +392,8 @@ app.post("/newJob", upload.single("productImage") ,(req,res) => {
         city: req.body.city,
         country: req.body.country,
         imgSrc: imgPathPretty,
-        scheduled: false
+        scheduled: false,
+        completed: false
     });
 
     const url = 'https://wft-geo-db.p.rapidapi.com/v1/geo/cities';
@@ -1083,7 +1085,7 @@ app.get("/myScheduledJobs", [auth.isAuth], (req,res) => {
             if(jobs){
                 const filteredJobs = [];
                 jobs.forEach((job) => {
-                    if(job.scheduled === true){
+                    if(job.scheduled === true && (job.completed === false || job.completed === undefined)){
                         filteredJobs.push(job);
                     }
                 })
@@ -1128,16 +1130,51 @@ app.post("/jobfinished", [auth.isAuth], (req,res) => {
         rating: req.body.rating
     }
 
+    console.log("Job ID:",req.body.jobId);
+
     User.findOne({userName: reviewAbout}, (err, user) => {
         if(err){
             console.log(err);
         }
         else{
             if(user){
-                console.log("Posted ....");
-                user.reviews.push(reviewData);
-                user.save();
-                res.status(200).send();
+
+                User.findOne({userName: reviewData.reviewer}, (err, reviewer) => {
+
+                    if(err){
+                        console.log(err);
+                    }
+                    else{
+                        if(reviewer){
+                            reviewData.reviewer = reviewer.firstAndLastName;
+                            user.reviews.push(reviewData);
+                            user.save();
+                
+                            Job.findById(req.body.jobId, (err, job) => {
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
+                                    if(job){
+                                        job.completed = true;
+                                        job.save();
+                                        res.status(200).send();
+                                    }
+                                    else{
+                                        res.status(404).send();
+                                    }
+                                }
+                            })
+
+                            res.status(200).send();
+                        }
+                    }
+
+
+
+                })
+
+                
             }
             else{
                 res.status(404).send();
@@ -1150,7 +1187,7 @@ app.post("/jobfinished", [auth.isAuth], (req,res) => {
 app.get("/profileInfo/:id", [auth.isAuth], (req,res) => {
 
     const id = req.params.id;
-    console.log(id);
+    
 
     User.findOne({userName: id}).then((user) => {
         

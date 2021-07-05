@@ -202,7 +202,7 @@ function Find(props){
 
         const url="http://localhost:3001/find/"+titleURL+"&"+categoryURL+"&"+distanceURL+"&"+userURL;
 
-        axios.get(url).then((response) => {
+        axios.get(url, {headers: {'Cache-Control' : 'no-cache'}}).then((response) => {
             setJobData(response.data);
             
         }).catch((err) => {

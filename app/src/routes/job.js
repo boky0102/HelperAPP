@@ -43,6 +43,10 @@ function Job(props){
         sendBtn:{
           position: "absoulte"
           
+        },
+        sideBox: {
+          overflowY: "scroll",
+          overflowX: "hidden"
         }
       }
     )
@@ -81,13 +85,15 @@ function Job(props){
             setJobData(response.data.jobData);
             setName(response.data.userData.name);
             setAvatarSrc("http://localhost:3001/" + response.data.userData.avatarSrc);
-            console.log("User data :",response.data.userData);
+            
         })
         .catch((err) => {
             console.log(err);
         })
 
     }, []);
+
+    console.log("Reviews",reviews);
 
 
     function handleMessageChange(event){
@@ -123,7 +129,7 @@ function Job(props){
         if(reviews !== undefined && reviews.length > 0){
           return(
             reviews.map( (review) => 
-                    <Review description={review.description} rating={review.rating} name={review.name}/>)
+                    <Review description={review.note} rating={review.rating} name={review.reviewer}/>)
           )
         }
         else{
@@ -280,7 +286,7 @@ function Job(props){
             </Grid>
 
             <Grid item container xs={12} md={8}>
-              <Box borderLeft={1} height="321px" overflow="auto" width="inherit" >
+              <Box borderLeft={1} height="321px" className={classes.sideBox}  width="inherit" >
                   
 
                   {sideBoxSwitch(sideBox)}
