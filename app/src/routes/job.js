@@ -11,6 +11,7 @@ import Cookies from 'universal-cookie';
 import Alert from "@material-ui/lab/Alert";
 import noreviews from "../static/no_review.svg"
 import Apply from "./apply";
+import Rating from "../components/rating";
 
 
 
@@ -55,10 +56,7 @@ function Job(props){
 
     const [imgHeight, setImgHeight] = useState(0);
     const [reviews, setReviews] = useState([]);
-    /* const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [name, setName] = useState("");
-    const [category, setCategory] = useState(""); */
+    
     
     const [jobData, setJobData] = useState({});
     const [name, setName] = useState("");
@@ -187,6 +185,24 @@ function Job(props){
       return clearInterval();
           
     }, [mess]);
+
+
+    function calculateAverageRating(reviews){
+      let ratingSum = 0;
+      if(reviews !== undefined){
+          reviews.forEach((review) => {
+              ratingSum += review.rating
+          })
+      }
+      
+
+      if(ratingSum > 0){
+          return ratingSum/reviews.length;
+      }
+      else{
+          return 0;
+      }
+  }
     
     
     
@@ -268,7 +284,7 @@ function Job(props){
               <Box display="flex" flexDirection="column" width="inherit">
                 <Box alignSelf="center" mt={1}>
                   <Typography>
-                    {name} (Rating 4.5/5.0)
+                    {name} <Rating rating={reviews !== undefined && calculateAverageRating(reviews)}></Rating>
                   </Typography>
                 </Box>
                 <Box m={1} alignSelf="center">

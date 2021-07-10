@@ -281,7 +281,7 @@ app.post("/register", (req,res) =>{
                     const data = response.data.data;
             
 
-                    if(data.length === 1){
+                    if(data.length >= 1){
                         console.log("DOBAR")
                         const x = data[0].latitude;
                         const y = data[0].longitude;
@@ -449,11 +449,11 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                 const filteredJobs = [];
                 
                 jobs.forEach((job) => {
-                    if(job.scheduled === false){
+                    if(job.scheduled !== true){
                         filteredJobs.push(job)
                     }
                 })
-
+                res.setHeader('Cache-Control', 'no-cache');
                 res.send(filteredJobs)
             })
 
@@ -555,7 +555,7 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                     const filteredJobs = [];
                     jobs.forEach((job) => {
                         console.log(job.username, " ", req.params.username);
-                        if (job.username != req.params.username){
+                        if (job.username != req.params.username && job.scheduled !== true){
                             filteredJobs.push(job);
                         }
                     })

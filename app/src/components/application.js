@@ -47,6 +47,10 @@ function Application(props){
             headerRow:{
                 [theme.breakpoints.down('md')]:{
                     flexDirection: "column"
+                },
+                [theme.breakpoints.down('lg')]:{
+                    flexDirection: "column",
+                    
                 }
 
             },
@@ -57,6 +61,11 @@ function Application(props){
             },
             profileButton:{
                 marginLeft: theme.spacing(3)
+            },
+            dateAplied:{
+                [theme.breakpoints.down('lg')]: {
+                    marginTop: theme.spacing(2)
+                }
             }
         }
     )
@@ -137,7 +146,7 @@ function Application(props){
                             <Typography>Borna Ivankovic</Typography>
                             <Button onClick={handleProfileButtonClick} className={classes.profileButton} variant="contained" color="primary" size="small" endIcon={<AccountCircleIcon></AccountCircleIcon>}>Profile</Button>
                         </Box>
-                        <Typography>Date applied :{prettyDate.toDateString()}</Typography>
+                        <Typography className={classes.dateAplied}>Date applied: {prettyDate.toDateString()}</Typography>
                     </Box>
                     <Box mt={2} mr={2}>
                         <Typography>

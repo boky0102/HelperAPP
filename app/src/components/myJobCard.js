@@ -14,14 +14,18 @@ function MyJobCard(props){
     const useStyles = makeStyles(
         {
             cardStyle: {
+                width: "100%",
                 [theme.breakpoints.down('md')] :{
                     flexDirection: "column"
                 }
             },
             imgStyle: {
+                width: "100%",
+                
                 [theme.breakpoints.down('md')] :{
                     width: "100%"
-                }
+                },
+                objectFit: "cover"
             },
             iconStyleOpen:{
                 transitionTimingFunction: "ease-in-out",
@@ -39,6 +43,10 @@ function MyJobCard(props){
                     flexDirection: "column",
                     alignItems: "center"
                 }
+            },
+            imageContainer: {
+                width: "100%"
+
             }
             
         }
@@ -76,7 +84,8 @@ function MyJobCard(props){
                 
                 
                         <Box className={classes.cardStyle} display="flex" flexDirection="row">
-                        <img className={classes.imgStyle} alt="job-descriptive" src={"http://localhost:3001/" + props.imgSrc} width="75%"></img>
+                        <Box className={classes.imageContainer} ><img className={classes.imgStyle} alt="job-descriptive" src={"http://localhost:3001/" + props.imgSrc} width="75%"></img></Box>
+                        
                 
                    
                             <Box display="flex" flexDirection="column" width="100%">

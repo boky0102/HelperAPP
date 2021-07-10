@@ -7,6 +7,7 @@ import { useParams } from 'react-router'
 import Cookies from 'universal-cookie'
 
 import Rating from '../components/rating';
+import Review from '../components/review';
 
 
 function Profile(){
@@ -55,7 +56,12 @@ function Profile(){
             },
 
             reviewsWrap: {
-
+                width: "100%",
+                height: "500px",
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
             },
             profileInfo: {
                 display: "flex",
@@ -141,7 +147,13 @@ function Profile(){
                 </Box>
             </Box>
             <Box className={classes.reviewsWrap}>
-
+                {
+                    userData.reviews !== undefined && userData.reviews.map((review) => 
+                        
+                        <Review name={review.reviewer} rating={review.rating} description={review.note}></Review>
+                        
+                    )
+                }
             </Box>
         </Card>
     )

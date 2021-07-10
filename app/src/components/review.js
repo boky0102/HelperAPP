@@ -1,5 +1,5 @@
-import { Avatar, Box, makeStyles, Typography } from "@material-ui/core";
-import picture from "../static/picture.jpg";
+import { Box, makeStyles, Typography } from "@material-ui/core";
+
 import Rating from '@material-ui/lab/Rating';
 
 function Review(props){
