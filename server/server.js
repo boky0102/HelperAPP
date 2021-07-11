@@ -1256,6 +1256,60 @@ app.get("/profileInfo/:id", [auth.isAuth], (req,res) => {
 
 
 
+app.get("/appliedScheduled", [auth.isAuth], (req,res) => {
+    
+    const worker = req.jwt.userName;
+    console.log("worker", worker);
+    Job.find({worker: worker}, (err, jobs) => {
+        if(err){
+            console.log(err)
+        }
+        else{
+            if(jobs){
+                const filteredJobs = [];
+                jobs.forEach((job) => {
+                    if(job.worker === worker && job.completed !== true){
+                        filteredJobs.push(job);
+                    }
+                })
+                /* console.log(filteredJobs); */
+                res.send(filteredJobs)
+            }
+        }
+    })
+    
+})
+
+app.get("/myapplied", [auth.isAuth], (req,res) => {
+    const jobholder = req.jwt.userName;
+
+    Job.find({scheduled: true}, (err,jobs) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            if(jobs){
+                const filteredJobs = [];
+                jobs.forEach((job) => {
+                    if(job.completed !== true){
+                        job.applications.forEach((applicant) => {
+                            
+                            console.log(applicant.username, "---", jobholder);
+                            if(jobholder === applicant.username){
+                                filteredJobs.push(job);
+                            }
+                        })
+
+
+                    }
+                    
+                })
+                console.log(filteredJobs);
+                res.send(filteredJobs);
+            }
+        }
+    })
+})
 
 
 
@@ -1267,4 +1321,5 @@ app.get("/profileInfo/:id", [auth.isAuth], (req,res) => {
 
 app.listen(3001, () => {
     console.log("Server running on port 3001");
+    
 })

@@ -74,6 +74,7 @@ function MyJobs(){
                     <Box className={classes.infoWrap}>
                         <Typography>You don't have any active job listings</Typography>
                         <Button variant="contained" color="secondary" onClick={() => history.push("/home/post")}>ADD NEW JOB</Button>
+                        
                     </Box>
                     
                 </Box>

@@ -24,9 +24,9 @@ function Jobs(){
         <Grid container xs={12}>
             <Grid item xs={12}>
                 <Box display="flex" width="100%" >
-                    <Button onClick={handleMyJobClick} fullWidth><Typography>My jobs</Typography></Button>
-                    <Button onClick={handleAppliedClick} fullWidth><Typography>Applied jobs</Typography></Button>
-                    <Button onClick={handleScheduledClick} fullWidth><Typography>Scheduled jobs</Typography></Button>
+                    <Button onClick={handleMyJobClick} variant={ currentMenu === "myjobs" ? "contained" : "" } color={ currentMenu === "myjobs" ? "primary" : "" } fullWidth><Typography>My jobs</Typography></Button>
+                    <Button onClick={handleAppliedClick} variant={ currentMenu === "applied" ? "contained" : "" } color={ currentMenu === "applied" ? "primary" : "" } fullWidth><Typography>Applied jobs</Typography></Button>
+                    <Button onClick={handleScheduledClick} variant={ currentMenu === "scheduled" ? "contained" : "" } color={ currentMenu === "scheduled" ? "primary" : "" } fullWidth><Typography>Scheduled jobs</Typography></Button>
                 </Box>
 
             </Grid>
