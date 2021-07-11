@@ -184,7 +184,7 @@ function UserCard(props){
                          <Box width="100%" display="flex" justifyContent="center">
                          <Box width="100%" ml={2} mr={2} mb={2}>
                              <form className={classes.formStyle} onSubmit={handleReviewSubmit}>
-                                 <TextField required onChange={handleReviewChange} label="Write a review" multiline rows="3" fullWidth variant="outlined" InputProps={{endAdornment:
+                                 <TextField autoFocus={finishedClick && true} required onChange={handleReviewChange} label="Write a review" multiline rows="3" fullWidth variant="outlined" InputProps={{endAdornment:
                                      <IconButton type="submit">
                                      <SendIcon></SendIcon>
                                      </IconButton>}}></TextField>

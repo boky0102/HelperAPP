@@ -19,14 +19,7 @@ function MyJobCard(props){
                     flexDirection: "column"
                 }
             },
-            imgStyle: {
-                width: "100%",
-                
-                [theme.breakpoints.down('md')] :{
-                    width: "100%"
-                },
-                objectFit: "cover"
-            },
+            
             iconStyleOpen:{
                 transitionTimingFunction: "ease-in-out",
                 transition: "0.7s",
@@ -45,8 +38,25 @@ function MyJobCard(props){
                 }
             },
             imageContainer: {
-                width: "100%"
+                width: "75%",
+                [theme.breakpoints.down('md')] :{
+                    width: "100%"
+                }
 
+            },
+            imgStyle: {
+                width: "100%",
+                height: "100%",
+                
+                [theme.breakpoints.down('md')] :{
+                    width: "100%"
+                },
+                objectFit: "cover"
+            },
+            mainCardStyle: {
+                marginLeft: props.profile && theme.spacing(2),
+                marginRight: props.profile && theme.spacing(2),
+                marginTop: props.profile && theme.spacing(1)
             }
             
         }
@@ -78,13 +88,13 @@ function MyJobCard(props){
 
     return(
         <Box mt={3}>
-        <Card >
+        <Card className={classes.mainCardStyle}>
             <CardActionArea onClick={handleCardClick}>
 
                 
                 
                         <Box className={classes.cardStyle} display="flex" flexDirection="row">
-                        <Box className={classes.imageContainer} ><img className={classes.imgStyle} alt="job-descriptive" src={"http://localhost:3001/" + props.imgSrc} width="75%"></img></Box>
+                            <Box className={classes.imageContainer} ><img className={classes.imgStyle} alt="job-descriptive" src={"http://localhost:3001/" + props.imgSrc} width="75%" /></Box>
                         
                 
                    
@@ -158,7 +168,7 @@ function MyJobCard(props){
 
 
 
-        {props.isScheduled !== undefined && 
+        { (props.isScheduled !== undefined && props.isScheduled) !== false && 
             <UserCard worker={props.worker}  jobId={props.jobId} isPublic={false}></UserCard>
             
         }
