@@ -139,6 +139,8 @@ const messageSchema = new mongoose.Schema({
     user2: String,
     user1Avatar: String,
     user2Avatar: String,
+    user1fullName: String,
+    user2fullName: String,
     messCount: Number,
     messages: [{
         sender: String,
@@ -806,18 +808,40 @@ app.post("/message", [auth.isAuth] , (req,res) => {
     .then((mess) => {
         if(!mess){
 
-            const newMessage = new Message;
-            newMessage.user1 = username;
-            newMessage.user2 = reciever;
-            newMessage.messCount = 1;
-            newMessage.messages.push(
-                {
-                    sender: username,
-                    message: message
+            User.findOne({userName: username}, (err, user1) => {
+                if(err){
+                    console.log(err);
                 }
-            );
-            newMessage.save();
-            res.status(200).send();
+                else{
+                    if(user1){
+                        User.findOne({userName: reciever}, (err, user2) => {
+                            if(err){
+                                console.log(err);
+                            }
+                            else{
+                                if(user2){
+                                    const newMessage = new Message;
+                                    newMessage.user1 = username;
+                                    newMessage.user2 = reciever;
+                                    newMessage.messCount = 1;
+                                    newMessage.user1fullName = user1.firstAndLastName;
+                                    newMessage.user2fullName = user2.firstAndLastName;
+                                    newMessage.messages.push(
+                                        {
+                                            sender: username,
+                                            message: message
+                                        }
+                                    );
+                                    newMessage.save();
+                                    res.status(200).send();
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+
+            
             
         }
         else if(mess){

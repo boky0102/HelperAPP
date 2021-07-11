@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react"
 
 function Message(props){
 
+    console.log("PROP NAME: ", props.name);
     const useStyles = makeStyles(
         {
             avatStyle:{
@@ -33,7 +34,7 @@ function Message(props){
                     <Box display="flex" flexDirection="row" m={2} >
                         <Box  display="flex" flexDirection="column" alignItems="center">
                             <Avatar src={avatarSrc} className={classes.avatStyle}></Avatar>
-                            <Typography>{props.name}</Typography>
+                            <Typography>{props.fullName}</Typography>
                         </Box>
                         <Box ml={3} alignSelf="center">
                             <Typography>{props.lastMessage}</Typography>

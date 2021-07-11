@@ -7,6 +7,7 @@ import { Link, useHistory } from "react-router-dom";
 import Conversation from "../components/conversation";
 import UserContext from "../userContext";
 import BackspaceIcon from '@material-ui/icons/Backspace';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 
 
 
@@ -15,9 +16,7 @@ import BackspaceIcon from '@material-ui/icons/Backspace';
 function Messager(){
 
     const cookies = new Cookies();
-    const [currentInbox, setInbox] = useState("recieved");
     const [messageData, setMessageData] = useState([]);
-    const [lastMessageIndx, setMessageIndx] = useState(false);
     const [currentMessage, setMessage] = useState(null);
     const [conversationData, setConversationData] = useState([]);
 
@@ -28,6 +27,10 @@ function Messager(){
             messageLink: {
                 textDecoration: "none",
                
+            },
+            conversationHeader: {
+                display: "flex",
+                alignItems: "center"
             }
         }
     )
@@ -45,7 +48,7 @@ function Messager(){
         const url="http://localhost:3001/inbox";
         axios.get(url, {headers: {'authorization': `Bearer ${token}`}})
         .then((response) => {
-            console.log("tu sam",response.data);
+            
             setMessageData(response.data.sort((a,b) => getLastMessage(a).date > getLastMessage(b).date ? -1 : 1));
 
 
@@ -53,7 +56,7 @@ function Messager(){
         .catch((err) => console.log(err))
     },[])
 
-
+    console.log("Message data : ",messageData);
 
     function handleClick(event){
         console.log(event.target.value);
@@ -85,26 +88,59 @@ function Messager(){
 
     const history = useHistory();
 
+    function getConversationName(conversationObject, currentUser){
+        console.log("TU Sam")
+        if(conversationObject.user1 === currentUser){
+            const returnData = {
+                username : conversationObject.user2,
+                fullName : conversationObject.user2fullName
+            }
+            return returnData;
+        }
+        
+        if(conversationObject.user2 === currentUser){
+            const returnData = {
+                username : conversationObject.user1,
+                fullName : conversationObject.user1fullName
+            }
+            return returnData;
+        }
 
+    }
+
+    const [fullName, setFullName] = useState("");
+    const [name, setName] = useState("");
+
+    function handleProfileClick(){
+        history.push("/home/profile/" + name);
+    }
     
-    
+    /* {message.messages[message.messages.length - 1].sender} */
    
     
     return(
         <Grid container item direction="column" xs={12}>
             <Box border={1} >
-                <Box color="primary">
+                <Box className={classes.conversationHeader}>
                     <IconButton onClick={handleBackClick}>
                         <BackspaceIcon>
                         </BackspaceIcon>
                     </IconButton>
-   
+                    {
+                        currentMessage !== null && 
+                        <Button onClick={handleProfileClick} variant="outlined" color="secondary" endIcon={<AccountBoxIcon color="secondary" ></AccountBoxIcon>}>{fullName}</Button>
+                    }
                 </Box>
                 <Box borderTop={1} height="700px" overflow="auto" width="100%">
                     {
                         currentMessage === null ?
                         messageData.map((message) =>
-                        <Card><CardActionArea onClick={(e) => setMessage(message._id)}><Message  name={message.messages[message.messages.length - 1].sender} lastMessage={message.messages[message.messages.length - 1].message}></Message></CardActionArea></Card>)
+                        <Card><CardActionArea onClick={() => {
+                            setMessage(message._id);
+                            setFullName(getConversationName(message, currentUser).fullName);
+                            setName(getConversationName(message, currentUser).username);
+                        }}>
+                        <Message  name={getConversationName(message, currentUser).username} fullName={getConversationName(message, currentUser).fullName}  lastMessage={message.messages[message.messages.length - 1].message}></Message></CardActionArea></Card>)
                         :
                         <Conversation mailHolder={currentUser} id={currentMessage}></Conversation>
                     }
