@@ -70,7 +70,7 @@ function App (){
 
         axios.get(url,{headers: {'authorization': `Bearer ${data}`}})
         .then((response) => {
-            console.log(response);
+            
             if(response.status === 200){
                 setAuthentication(true);
                 const user = response.data;

@@ -1281,9 +1281,11 @@ app.get("/appliedScheduled", [auth.isAuth], (req,res) => {
 })
 
 app.get("/myapplied", [auth.isAuth], (req,res) => {
-    const jobholder = req.jwt.userName;
 
-    Job.find({scheduled: true}, (err,jobs) => {
+
+    const username = req.jwt.userName;
+
+    Job.find({}, (err, jobs) => {
         if(err){
             console.log(err);
         }
@@ -1291,24 +1293,21 @@ app.get("/myapplied", [auth.isAuth], (req,res) => {
             if(jobs){
                 const filteredJobs = [];
                 jobs.forEach((job) => {
-                    if(job.completed !== true){
-                        job.applications.forEach((applicant) => {
-                            
-                            console.log(applicant.username, "---", jobholder);
-                            if(jobholder === applicant.username){
-                                filteredJobs.push(job);
-                            }
-                        })
-
-
-                    }
-                    
+                    job.applications.forEach((applicant) => {
+                        if(applicant.username === username && job.completed !== true && job.scheduled !== true){
+                            filteredJobs.push(job);
+                        }
+                    })
                 })
-                console.log(filteredJobs);
                 res.send(filteredJobs);
+            }
+            else{
+                res.status(404).send();
             }
         }
     })
+
+
 })
 
 
