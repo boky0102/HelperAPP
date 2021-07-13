@@ -1,4 +1,5 @@
-import { Box, Typography } from "@material-ui/core";
+import { Box, makeStyles, Typography, useTheme } from "@material-ui/core";
+import { grey } from "@material-ui/core/colors";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Cookie from "universal-cookie";
@@ -37,16 +38,38 @@ function ScheduledJobs(){
 
     }, [])
 
+    const theme = useTheme();
+
+    const useStyles = makeStyles(
+        {
+            divider:{
+                width: "100%",
+                height: "1px",
+                backgroundColor: "grey",
+                marginBottom: theme.spacing(2)
+            },
+            dividerText: {
+                marginTop: theme.spacing(2)
+            }
+        }
+    )
+
+    const classes = useStyles();
+
 
     return(
         <Box>
-            <Typography>My scheduled jobs</Typography>
+            
+            <Typography className={classes.dividerText}>My scheduled jobs</Typography>
+            <div className={classes.divider}></div>
             <Box>
                 {jobData.map((job) => <MyJobCard  worker={job.worker} isScheduled={true} imgSrc={job.imgSrc} budget={job.budget + "€"} description={job.description} title={job.title} category={job.category} deadline={job.deadline} jobId={job._id}></MyJobCard>)}
             </Box>
-            <Typography>Scheduled jobs I applied to</Typography>
+            
+            <Typography className={classes.dividerText}>Scheduled jobs applied to</Typography>
+            <div className={classes.divider}></div>
             <Box>
-                { appliedJobs.map((job) => <MyJobCard  worker={job.worker} isScheduled={true} imgSrc={job.imgSrc} budget={job.budget + "€"} description={job.description} title={job.title} category={job.category} deadline={job.deadline} jobId={job._id}></MyJobCard>) }
+                { appliedJobs.map((job) => <MyJobCard  worker={job.worker} isScheduled={true} imgSrc={job.imgSrc} budget={job.budget + "€"} description={job.description} title={job.title} category={job.category} deadline={job.deadline} jobId={job._id} applied={true} workProvider={job.username}></MyJobCard>) }
             </Box>
         </Box>
     )

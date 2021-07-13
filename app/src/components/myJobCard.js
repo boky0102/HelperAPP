@@ -5,6 +5,7 @@ import Category from "./category";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Application from "./application";
 import UserCard from "./UserCard";
+import UserBigCard from "./userBigCard";
 
 function MyJobCard(props){
 
@@ -38,10 +39,11 @@ function MyJobCard(props){
                 }
             },
             imageContainer: {
-                width: "75%",
+                width: "80%",
                 [theme.breakpoints.down('md')] :{
                     width: "100%"
-                }
+                },
+                height: "200px"
 
             },
             imgStyle: {
@@ -168,9 +170,13 @@ function MyJobCard(props){
 
 
 
-        { (props.isScheduled !== undefined && props.isScheduled) !== false && 
+        { (props.isScheduled !== undefined && props.isScheduled && props.applied === undefined) !== false && 
             <UserCard worker={props.worker}  jobId={props.jobId} isPublic={false}></UserCard>
             
+        }
+
+        { (props.isScheduled !== undefined && props.isScheduled && props.applied === true && props.applied !== undefined) !== false &&
+            <UserBigCard workProvider={props.workProvider}></UserBigCard>
         }
         </Box>
     )
