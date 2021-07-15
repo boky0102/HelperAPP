@@ -1,22 +1,19 @@
 
-import { AppBar, makeStyles, Toolbar, TextField, Box, FormControl, InputLabel, Select, MenuItem, Typography, Slider, Button, Fade } from "@material-ui/core";
+import { AppBar, makeStyles, Toolbar, TextField, Box, FormControl, InputLabel, Select, MenuItem, Typography, Slider, Button } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { useContext, useState } from "react";
 import theme from "../theme";
 import SearchIcon from '@material-ui/icons/Search';
-import JobCard from "../components/jobCard";
 import UserContext from "../userContext";
 import axios from "axios";
-import MyJobCard from "../components/myJobCard"
+import MyJobCard from "../components/myJobCard";
+
 
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const defaultBorderProps = {
-    borderColor: 'purple',
 
-}
 
 const useStyles = makeStyles({
 
@@ -102,7 +99,7 @@ function Find(props){
         title:"",
         category: "",
         distance: sliderVal,
-        user: user
+        user: ""
     })
 
     const [jobData, setJobData] = useState([]);
@@ -300,7 +297,7 @@ function Find(props){
 
                 {jobData.map((job) => (
                     <Box width="inherit"    borderTop={1} borderColor="grey.200">
-                        <MyJobCard id={job._id} title={job.title} distance={job.distance} imgSrc={job.imgSrc} description={job.description.substring(0,150)+"..."} budget={job.budget + "€"} category={job.category} deadline={job.deadline} isPublic={true} />
+                        <MyJobCard id={job._id} title={job.title} distance={job.distance} imgSrc={job.imgSrc} description={job.description.substring(0,150)+"..."} budget={job.budget + "€"} category={job.category} deadline={job.deadline} isPublic={true} jobCoordinateX={job.coordinates.x} jobCoordinateY={job.coordinates.y} />
                     </Box>
                 ))}
 

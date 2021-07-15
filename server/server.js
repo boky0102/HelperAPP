@@ -347,7 +347,7 @@ app.post("/login", (req,res) => {
 
                         
                         
-                        res.json({token: token, username: user.userName});
+                        res.json({token: token, username: user.userName, userCoordinateX: user.coordinates.x, userCoordinteY: user.coordinates.y});
                         
                     }else{
                     res.status(401).send();

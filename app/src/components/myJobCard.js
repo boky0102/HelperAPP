@@ -6,6 +6,9 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Application from "./application";
 import UserCard from "./UserCard";
 import UserBigCard from "./userBigCard";
+import distanceCalc from "../functions/distanceCalc";
+import Cookies from "universal-cookie";
+import Distance from "./distance";
 
 function MyJobCard(props){
 
@@ -64,11 +67,38 @@ function MyJobCard(props){
         }
     )
 
+    const cookies = new Cookies()
+
     
 
     const classes = useStyles();
     const history = useHistory();
     const [isClicked, clicked] = useState(false);
+
+    const [coordinates, setCoordinates] = useState({});
+    const [distance, setDistance] = useState();
+    
+    
+    useEffect(() => {
+
+
+        const userX = cookies.get('userCityX');
+        const userY = cookies.get('userCityY');
+
+        if(userX !== null & userY !== null){
+            setCoordinates({
+                x: userX,
+                y: userY
+            })
+            setDistance(distanceCalc(userX,userY,props.jobCoordinateX,props.jobCoordinateY));
+        }
+
+        
+
+        }, [])
+    
+    console.log("DISTANCE", distance);
+    
 
     function handleCardClick(){
 
@@ -86,7 +116,7 @@ function MyJobCard(props){
         
     }
 
-    console.log("PROPS",props);
+    {/* <Distance distance={distanceCalc(props.jobCoordinateX,props.jobCoordinateY,cookies.get('userCityX'), cookies.get('userCityY'))}></Distance> */}
 
     return(
         <Box mt={3}>
@@ -106,6 +136,10 @@ function MyJobCard(props){
                                     <Typography>
                                         {props.title}
                                     </Typography>
+                                    {
+                                        (props.jobCoordinateX !== undefined && props.jobCoordinateY !== undefined && distance !== undefined) && 
+                                        <Distance distance={distance}></Distance>
+                                    }
                                     {(props.isPublic !== true && props.isScheduled !== true) && <Button size="small" color="primary" variant="contained" endIcon={<ArrowForwardIosIcon className={isClicked ? classes.iconStyleOpen : classes.iconStyleClose}></ArrowForwardIosIcon>}>
                                         <Typography>
                                             SHOW APPLICANTS
@@ -124,7 +158,7 @@ function MyJobCard(props){
                                         </Box>
                                     </Box>
 
-                                    <Box my={2} display="flex" width="100%" justifyContent="space-between">
+                                    <Box my={2} display="flex" width="100%" justifyContent="space-between" alignItems="center">
                             
                                         <Box mx={2}>
                                             <Typography>

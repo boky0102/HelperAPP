@@ -229,7 +229,8 @@ function App (){
                     const cookies = new Cookies();
 
                     cookies.set('token', response.data.token);
-                    
+                    cookies.set('userCityX', response.data.userCoordinateX);
+                    cookies.set('userCityY', response.data.userCoordinteY);   
                     
 
                 }
@@ -319,7 +320,7 @@ function App (){
 
 
                         <Grid container>
-                            <Grid item sm={2}></Grid>
+                            
                             <Grid container item xs={12} md={8} container direction="column">
                                 <Grid item container>
                                     <Header handleLogOut={handleLogOut}/>
@@ -380,7 +381,7 @@ function App (){
                                 </Grid>
                                     
                             </Grid>
-                            <Grid item  sm={2}></Grid>
+                            
 
                             
                         
