@@ -116,7 +116,7 @@ function MyJobCard(props){
         
     }
 
-    {/* <Distance distance={distanceCalc(props.jobCoordinateX,props.jobCoordinateY,cookies.get('userCityX'), cookies.get('userCityY'))}></Distance> */}
+    
 
     return(
         <Box mt={3}>

@@ -36,6 +36,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import MessageIcon from '@material-ui/icons/Message';
 import WorkIcon from '@material-ui/icons/Work';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import SearchResult from "./routes/searchResult";
 
 
 
@@ -272,17 +273,20 @@ function App (){
                 position: "fixed",
                 width: "15%",
                 [theme.breakpoints.down('sm')] : {
-                    display: "none"
+                    display: "none",
+                    width: "0%"
                 },
                 backgroundColor: theme.palette.secondary.main
             },
             mainContainer: {
                 [theme.breakpoints.down('sm')] : {
                     marginLeft: theme.spacing(1),
-                    marginRight: theme.spacing(1)
+                    marginRight: theme.spacing(1),
+                    width: "100%"
                 },
-                
-                width: "100%"
+
+                margin: theme.spacing(3),
+                width: "95%"
             },
             icon: {
                 width: "50px",
@@ -320,7 +324,7 @@ function App (){
 
 
                                 <Grid container item my={3}>
-                                    <Grid  item xs={12} sm={3} >
+                                    <Grid  item xs={12} sm={2} >
                                         
                                             <Paper className={classes.sidebar} elevation={3} color="primary" square>
                                                 <Link to="/home/find"><Button onClick={() => setNavState("find")} size="large" name="find" color={navState === "find" ? "primary" : "black"} variant={navState === "find" ? "contained" : "outlined"} fullWidth><Box><SearchIcon className={classes.icon}></SearchIcon><Typography>FIND A JOB</Typography></Box></Button></Link>
@@ -334,9 +338,9 @@ function App (){
 
 
                                 
-                                    <Grid container item xs={12} sm={12} md={9}>
-                                        <Grid item sm={0} md={1} ></Grid>
-                                        <Grid md={10} xs={12}>
+                                    <Grid container item xs={12} sm={10}>
+                                        
+                                        
                                         <Box mt={2} width="inherit" className={classes.mainContainer}>
                                             
                                             <Switch>
@@ -373,11 +377,15 @@ function App (){
                                                     <Jobs></Jobs>
                                                 </Route>
 
+                                                <Route path="/home/search/:title/:category">
+                                                    <SearchResult></SearchResult>
+                                                </Route>
+
                                             </Switch>
                                             
                                         </Box>
-                                        </Grid>
-                                        <Grid item sm={0} md={1}></Grid>
+                                        
+                                        
                                     </Grid>
                                 </Grid>
                                     

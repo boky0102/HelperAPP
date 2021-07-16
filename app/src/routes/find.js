@@ -43,7 +43,7 @@ function Find(props){
     const [category, setCategory] = useState("");
 
     const user = useContext(UserContext);
-    console.log("USER :", user);
+    
 
     
 
@@ -188,7 +188,7 @@ function Find(props){
         
 
 
-        var userURL = searchParams.user;
+        var userURL = user;
 
         if(userURL === ""){
             userURL = "none";

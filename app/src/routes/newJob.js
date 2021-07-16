@@ -285,7 +285,7 @@ function NewJob(){
 
             <Grid item>
                 <Box mt={2}>
-                    <TextField name="title" required fullWidth variant="outlined" color="secondary" label="Enter job title" autoFocus="true" size="large" onChange={handleFieldChange}></TextField>
+                    <TextField name="title" required variant="outlined" color="secondary" label="Enter job title" autoFocus="true" size="large" onChange={handleFieldChange}></TextField>
                 </Box>
             </Grid>
 

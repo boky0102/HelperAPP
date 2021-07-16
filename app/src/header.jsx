@@ -12,6 +12,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MenuIcon from '@material-ui/icons/Menu';
 import React from "react";
 import SearchIcon from '@material-ui/icons/Search';
+import { useHistory } from "react-router-dom";
 
 
 
@@ -137,9 +138,28 @@ function Header(props){
     
     
     const [drawer, openDrawer] = useState(false);
-    console.log(drawer);
+    
 
+    const [ queryTitle, setQuery ]  = useState("");
+    const [ queryCategory, setQueryCategory ] = useState("None");
         
+    const history = useHistory();
+
+    function handleSearchClick(){
+        let title = "none";
+        let category = "none";
+
+        if(queryTitle !== ""){
+            title = queryTitle;
+        }
+        if(queryCategory !== "None" && queryCategory !== "Any"){
+            category = queryCategory;
+        }
+
+        history.push("/home/search/"+title+"/"+category);
+    }
+
+
 
     return(
         <Box>
@@ -151,7 +171,7 @@ function Header(props){
                             <Avatar src={avatSrc} className={classes.avatarStyoes}></Avatar>
                             <IconButton className={classes.hamburgerIcon} onClick={() => openDrawer(!drawer)}><MenuIcon></MenuIcon></IconButton>
                             <Box className={classes.appBarForm}>
-                                <TextField className={classes.searchForm} variant="outlined" color="secondary" placeholder="Search for jobs" endAdornment={
+                                <TextField className={classes.searchForm} onChange={(e) => setQuery(e.target.value) } variant="outlined" color="secondary" placeholder="Search for jobs" endAdornment={
                                     <IconButton><SearchIcon></SearchIcon></IconButton>
                                 }></TextField>
                                 
@@ -163,6 +183,7 @@ function Header(props){
                                 name="category"
                                 defaultValue="Any"
                                 className={classes.category}
+                                onChange = {(e) => setQueryCategory(e.target.value)}
                                 >
                                     <MenuItem value={"Any"}>Any</MenuItem>
                                     <MenuItem value={"Digital"}>Digital</MenuItem>
@@ -177,7 +198,7 @@ function Header(props){
                                     <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
                                 </Select>
 
-                                <Button className={classes.category} variant="contained" color="secondary" endIcon={<SearchIcon></SearchIcon>}>Search</Button>
+                                <Button onClick={handleSearchClick}  className={classes.category} variant="contained" color="secondary" endIcon={<SearchIcon></SearchIcon>}>Search</Button>
                             </Box>
                         </Box>
                         <Box p={1} mx={2} className={classes.logoContainer}>

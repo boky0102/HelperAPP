@@ -510,38 +510,55 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
         else if(req.params.category === "none" && req.params.distance !== "none" && req.params.username !== "none"){
 
             Job.find({}, (err, jobs) => {
-                
-                if(jobs){
+                if(err){
+                    console.log(err);
+                }
+
+                else{
                     
-                    User.findOne({userName: req.params.username}, (err, user) => {
-                        if(user){
+                    if(jobs){
+                    
+                        User.findOne({userName: req.params.username}, (err, user) => {
+                            if(user){
+    
+                                var filteredJobs = [];
 
-                            var filteredJobs = [];
+                                console.log(user.userName, req.params.username);
+    
+                                if(user.userName === req.params.username){
+                                    const dist = parseInt(req.params.distance);
+                                    console.log("DISTANCE: ", typeof(dist));
+                                    jobs.forEach((job) => {
+                                        if(job.username !== req.params.username && job.scheduled !== true && job.completed !== true){
+                                            if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= dist){
+                                                job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y);
+                                                filteredJobs.push(job);
+                                            }
 
-                            if(user.userName !== req.params.username){
-
-                                jobs.forEach((job) => {
-                                    if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
-                                        job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y);
-                                        filteredJobs.push(job);
-                                    }
-                                })
-
-
+                                        }
+                                        
+                                    })
+    
+    
+                                }
+                                
+                                
+                                //TU JE BUG //////////////////////////////////////////
+                                
+                                res.send(filteredJobs);
+                                
+    
+    
+                            }else{
+                                console.log("Didnt find user");
                             }
                             
-                            
-                            
-                            res.send(filteredJobs);
-                            
-
-
-                        }else{
-                            console.log("Didnt find user");
-                        }
-                        
-                    })
+                        })
+                    }
+                
                 }
+                
+                
             })
 
         }
