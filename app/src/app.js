@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 
-import { Button, Box } from '@material-ui/core';
+import { Button, Box, Toolbar, AppBar, makeStyles, useTheme, Paper, Typography } from '@material-ui/core';
 
 import Grid from '@material-ui/core/Grid';
 import Header from './header';
@@ -31,6 +31,12 @@ import Cookies from "universal-cookie";
 import Apply from "./routes/apply";
 import Jobs from "./routes/jobs";
 import Profile from "./routes/userProfile";
+import SearchIcon from '@material-ui/icons/Search';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import MessageIcon from '@material-ui/icons/Message';
+import WorkIcon from '@material-ui/icons/Work';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+
 
 
 
@@ -58,7 +64,7 @@ function App (){
     const [regError, setRegError] = useState("");
     const [logError, setLogError] = useState("");
     const [currentUser, setCurrentUser] = useState("");
-    const [currentPage, setCurrentPage] = useState("/home");
+    
 
     const history = useHistory();
     
@@ -255,57 +261,43 @@ function App (){
         setAuthentication(false);
     }
 
-    function handleFindClick(){
-        setCurrentPage("find");
-    }
+    const theme = useTheme();
 
-    function handleNewJobClick(){
-        setCurrentPage("newJob");
-    }
-
-    function handleMessageClick(){
-        setCurrentPage("messages");
-    }
-
-    function handleMyJobsClick(){
-        setCurrentPage("myJobs");
-    }
-    
-    function handleMyProfileClick(){
-        setCurrentPage("myProfile");
-    }
-
-    function handleJobClick(){
-        setCurrentPage("job");
-    }
-
-    function pageSwitch(page){
-        switch(page){
-            case "find":
-                return <Find/>
-                break;
-            case "newJob":
-                return <NewJob/>
-                break;
-            case "messages":
-                return <Messager/>
-                break;
-            case "myJobs":
-                return <MyJobs/>
-                break;
-            case "myProfile":
-                return <Myprofile/>
-                break;
-            case "job":
-                return <Job />
-                break;
+    const useStyles = makeStyles(
+        {
+            sidebar:{
+                display: "flex",
+                flexDirection: "column",
+                height: "100vh",
+                position: "fixed",
+                width: "15%",
+                [theme.breakpoints.down('sm')] : {
+                    display: "none"
+                },
+                backgroundColor: theme.palette.secondary.main
+            },
+            mainContainer: {
+                [theme.breakpoints.down('sm')] : {
+                    marginLeft: theme.spacing(1),
+                    marginRight: theme.spacing(1)
+                },
+                
+                width: "100%"
+            },
+            icon: {
+                width: "50px",
+                height: "50px"
+            }
         }
+    )
 
-    }
+    const classes = useStyles();
 
+    const [navState, setNavState] = useState("");
     
     
-   
+
+    
 
 
     return(
@@ -321,25 +313,31 @@ function App (){
 
                         <Grid container>
                             
-                            <Grid container item xs={12} md={8} container direction="column">
+                            <Grid container item xs={12} md={12} direction="column">
                                 <Grid item container>
                                     <Header handleLogOut={handleLogOut}/>
                                 </Grid>
 
 
                                 <Grid container item my={3}>
-                                    <Grid  item xs={12} sm={4} >
-                                        <Link to="/home/find"><Button size="large" color="secondary" fullWidth>FIND JOB</Button></Link>
-                                        <Link to="/home/post"><Button size="large" color="secondary" fullWidth>POST JOB</Button></Link>
-                                        <Link to="/home/messages"><Button size="large" color="secondary" fullWidth>MESSAGES</Button></Link>
-                                        <Link to="/home/jobs"><Button size="large" color="secondary" fullWidth>MY JOBS</Button></Link>
-                                        <Link to="/home/myprofile"><Button size="large" color="secondary" fullWidth>MY PROFILE</Button></Link>
+                                    <Grid  item xs={12} sm={3} >
+                                        
+                                            <Paper className={classes.sidebar} elevation={3} color="primary" square>
+                                                <Link to="/home/find"><Button onClick={() => setNavState("find")} size="large" name="find" color={navState === "find" ? "primary" : "black"} variant={navState === "find" ? "contained" : "outlined"} fullWidth><Box><SearchIcon className={classes.icon}></SearchIcon><Typography>FIND A JOB</Typography></Box></Button></Link>
+                                                <Link to="/home/post"><Button onClick={() => setNavState("post")} size="large" name="post" color={navState === "post" ? "primary" : "black"} variant={navState === "post" ? "contained" : "outlined"} fullWidth><Box><AddBoxIcon className={classes.icon}></AddBoxIcon><Typography>POST A JOB</Typography></Box></Button></Link>
+                                                <Link to="/home/messages"><Button onClick={() => setNavState("messages")} size="large" name="messages" color={navState === "messages" ? "primary" : "black"} variant={navState === "messages" ? "contained" : "outlined"} fullWidth><Box><MessageIcon className={classes.icon}></MessageIcon><Typography>Messages</Typography></Box></Button></Link>
+                                                <Link to="/home/jobs"><Button onClick={() => setNavState("jobs")} size="large" name="jobs" color={navState === "jobs" ? "primary" : "black"} variant={navState === "jobs" ? "contained" : "outlined"} fullWidth><Box><WorkIcon className={classes.icon}></WorkIcon><Typography>MY JOBS</Typography></Box></Button></Link>
+                                                <Link to="/home/myprofile"><Button onClick={() => setNavState("myprofile")} size="large" name="myprofile" color={navState === "myprofile" ? "primary" : "black"} variant={navState === "myprofile" ? "contained" : "outlined"} fullWidth><Box><AccountBoxIcon className={classes.icon}></AccountBoxIcon><Typography>MY PROFILE</Typography></Box></Button></Link>
+                                            </Paper>
+                                        
                                     </Grid>
 
 
                                 
-                                    <Grid container item xs={12} sm={8}>
-                                        <Box p={1} width="inherit">
+                                    <Grid container item xs={12} sm={12} md={9}>
+                                        <Grid item sm={0} md={1} ></Grid>
+                                        <Grid md={10} xs={12}>
+                                        <Box mt={2} width="inherit" className={classes.mainContainer}>
                                             
                                             <Switch>
 
@@ -376,7 +374,10 @@ function App (){
                                                 </Route>
 
                                             </Switch>
+                                            
                                         </Box>
+                                        </Grid>
+                                        <Grid item sm={0} md={1}></Grid>
                                     </Grid>
                                 </Grid>
                                     

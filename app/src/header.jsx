@@ -1,16 +1,17 @@
-import { AppBar, Avatar, Toolbar, Box, Button, IconButton } from "@material-ui/core";
+import { AppBar, Avatar, Toolbar, Box, Button, IconButton, Select, Input, MenuItem, InputLabel, TextField } from "@material-ui/core";
 
 import {makeStyles} from "@material-ui/styles";
 
 import theme from "./theme";
 import logo from "./static/drawing2.svg";
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { useContext, useEffect, useRef, useState, useLayoutEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import UserContext from "./userContext";
 import axios from "axios";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MenuIcon from '@material-ui/icons/Menu';
 import React from "react";
+import SearchIcon from '@material-ui/icons/Search';
 
 
 
@@ -86,14 +87,29 @@ function Header(props){
             [theme.breakpoints.down('sm')] : {
                 height: "80px"
             }
+        },
+
+        appBarForm: {
+            display:"flex",
+            justifyContent: "center",
+            alignItems: "center"
+        },
+
+        formWraper: {
+            display: "flex"
+        },
+
+        searchForm: {
+            marginLeft: theme.spacing(4),
+            [theme.breakpoints.down('sm')] : {
+                display: "none"
+            }
+        },
+        category: {
+            
+            marginLeft: theme.spacing(2)
         }
     
-        
-        
-       
-
-        
-        
         
     })
 
@@ -119,7 +135,11 @@ function Header(props){
         setHeight(toolbarHeight.current.clientHeight);
     }, [])
     
-    console.log(height);
+    
+    const [drawer, openDrawer] = useState(false);
+    console.log(drawer);
+
+        
 
     return(
         <Box>
@@ -127,9 +147,38 @@ function Header(props){
                 
                 <Toolbar className={classes.toolbarStyle} innerRef={toolbarHeight}>
                     
-                        <Box my={2}>
+                        <Box my={2} className={classes.formWraper}>
                             <Avatar src={avatSrc} className={classes.avatarStyoes}></Avatar>
-                            <IconButton className={classes.hamburgerIcon}><MenuIcon></MenuIcon></IconButton>
+                            <IconButton className={classes.hamburgerIcon} onClick={() => openDrawer(!drawer)}><MenuIcon></MenuIcon></IconButton>
+                            <Box className={classes.appBarForm}>
+                                <TextField className={classes.searchForm} variant="outlined" color="secondary" placeholder="Search for jobs" endAdornment={
+                                    <IconButton><SearchIcon></SearchIcon></IconButton>
+                                }></TextField>
+                                
+                                <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                color="secondary"
+                                required
+                                name="category"
+                                defaultValue="Any"
+                                className={classes.category}
+                                >
+                                    <MenuItem value={"Any"}>Any</MenuItem>
+                                    <MenuItem value={"Digital"}>Digital</MenuItem>
+                                    <MenuItem value={"Hard Labour"}>Hard Labour</MenuItem>
+                                    <MenuItem value={"Cleaning"}>Cleaning</MenuItem>
+                                    <MenuItem value={"Gardening"}>Gardening</MenuItem>
+                                    <MenuItem value={"Driving"}>Driving</MenuItem>
+                                    <MenuItem value={"Teaching"}>Teaching</MenuItem>
+                                    <MenuItem value={"Furniture moving"}>Furniture moving</MenuItem>
+                                    <MenuItem value={"Furniture building"}>Furniture Building</MenuItem>
+                                    <MenuItem value={"Machine fixing"}>Machine fixing</MenuItem>
+                                    <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
+                                </Select>
+
+                                <Button className={classes.category} variant="contained" color="secondary" endIcon={<SearchIcon></SearchIcon>}>Search</Button>
+                            </Box>
                         </Box>
                         <Box p={1} mx={2} className={classes.logoContainer}>
                             <img alt="helper logo" src={logo} className={classes.logoStyle}/>

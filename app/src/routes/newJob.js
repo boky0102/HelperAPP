@@ -182,6 +182,9 @@ function NewJob(){
                 })
             break;
 
+            default:
+                
+
 
         }
         console.log(jobData);
