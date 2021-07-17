@@ -194,7 +194,8 @@ function filterJobsByTitle(jobs,title){
                 imgSrc: job.imgSrc,
                 id: job.id,
                 deadline: job.deadline,
-                diffIndx: titleDiffIndx
+                diffIndx: titleDiffIndx,
+                coordinates: job.coordinates
             };
             
             filteredJobs.push(jobWthIndx);
@@ -211,6 +212,17 @@ function filterJobsByTitle(jobs,title){
         
     })
 
+}
+
+function filterOutPending(job,user){
+    let userApplied = false;
+    job.applications.forEach((applicant) => {
+        if(applicant.username === user){
+            userApplied = true;
+        }
+    })
+    
+    return userApplied;
 }
 
 
@@ -451,7 +463,7 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                 const filteredJobs = [];
                 
                 jobs.forEach((job) => {
-                    if(job.scheduled !== true){
+                    if(job.scheduled !== true && job.completed !== true){
                         filteredJobs.push(job)
                     }
                 })
@@ -463,7 +475,13 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
 
         else if(req.params.category !== "none" && req.params.distance === "none" && req.params.username === "none"){
             Job.find({category: req.params.category}, (err, jobs) => {
-                res.send(jobs);
+                const filteredJobs = [];
+                jobs.forEach((job) => {
+                    if(job.scheduled !== true && job.completed !== true){
+                        job.push(filteredJobs);
+                    }
+                })
+                res.send(filteredJobs);
             })
         }
 
@@ -484,10 +502,18 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
 
                                 
                                 jobs.forEach((job) => {
-                                    if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
-                                        job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
-                                        filteredJobs.push(job);
+                                    if(job.scheduled !== true && job.completed !== true){
+
+                                        if(filterOutPending(job,req.params.username) === false){
+                                            if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                                job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
+                                                filteredJobs.push(job);
+                                            }
+                                        }
+                                        
+
                                     }
+                                    
                                 })
                                  res.send(filteredJobs);
 
@@ -527,13 +553,18 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
     
                                 if(user.userName === req.params.username){
                                     const dist = parseInt(req.params.distance);
-                                    console.log("DISTANCE: ", typeof(dist));
+                                    
                                     jobs.forEach((job) => {
                                         if(job.username !== req.params.username && job.scheduled !== true && job.completed !== true){
-                                            if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= dist){
-                                                job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y);
-                                                filteredJobs.push(job);
+
+                                            if(filterOutPending(job, req.params.username) === false){
+                                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= dist){
+                                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y);
+                                                    filteredJobs.push(job);
+                                                }
+
                                             }
+                                            
 
                                         }
                                         
@@ -575,7 +606,10 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                     jobs.forEach((job) => {
                         console.log(job.username, " ", req.params.username);
                         if (job.username != req.params.username && job.scheduled !== true){
-                            filteredJobs.push(job);
+                            if(filterOutPending(job, req.params.username) === false){
+                                filteredJobs.push(job);
+                            }
+                            
                         }
                     })
                     if(filteredJobs.length>0){
@@ -605,8 +639,11 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                                     const filteredJobs = [];
                                     jobs.forEach((job) => {
                                         console.log(job.username, " ", req.params.username);
-                                        if (job.username != req.params.username){
-                                        filteredJobs.push(job);
+                                        if (job.username !== req.params.username && job.scheduled !== true && job.completed !== true){
+                                            if(filterOutPending(job, req.params.username) === false){
+                                                filteredJobs.push(job);
+                                            }
+                                        
                                         }
                                     })
                 
@@ -661,9 +698,17 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                                 let filteredJobs = [];
                                 jobs.forEach((job) => {
                                 
-                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
-                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
-                                    filteredJobs.push(job);
+                                if(job.scheduled !== true && job.completed !== true){
+                                    if(filterOutPending(job, req.params.username) === false){
+                                        if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance)
+                                            {
+                                            job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
+                                            filteredJobs.push(job);
+                                            }
+
+                                    }
+                                    
+                                
                                 }
                                 })
                                 filterJobsByTitle(filteredJobs, req.params.title).then((response) => {
@@ -684,6 +729,10 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
         }
         else if (req.params.category === "none" && req.params.distance !== "none" && req.params.username !== "none"){
 
+            //TU RADIM///////////////////////////////////////
+
+            
+
             Job.find({}, (err,jobs) => {
                 if(jobs){
                     User.findOne({userName: req.params.username}, (err, user) => {
@@ -695,13 +744,23 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                                 let filteredJobs = [];
                                 jobs.forEach((job) => {
                                 
-                                if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
-                                    job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
-                                    filteredJobs.push(job);
+                                if(job.scheduled !== true && job.completed !== true){
+                                    if(filterOutPending(job, req.params.username) === false){
+
+                                        if(distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y) <= req.params.distance){
+                                            job.distance = distance.getDistance(job.coordinates.x,job.coordinates.y,user.coordinates.x,user.coordinates.y)
+                                            filteredJobs.push(job);
+                                        }
+
+                                    }
+                                    
                                 }
+                                
                                 })
                                 filterJobsByTitle(filteredJobs, req.params.title).then((response) => {
+                                    console.log(response);
                                     res.send(response);
+                                    
                                 })
 
 
@@ -718,6 +777,8 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
         }
 
         else if(req.params.category === "none" && req.params.distance === "none" && req.params.username !== "none"){
+
+            
             Job.find({}, (err,jobs) => {
                 if(err){
                     console.log(err);
@@ -725,14 +786,19 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                 else{
                     const filteredJobs = [];
                     jobs.forEach((job) => {
-                        if(job.username !== req.params.username){
-                            filteredJobs.push(job);
+                        if(job.username !== req.params.username && job.scheduled !== true && job.completed !== true){
+
+                            if(filterOutPending(job, req.params.username) === false){
+                                filteredJobs.push(job);
+                            }
+                            
                         }
                     });
                     if(filteredJobs.length > 0){
                         filterJobsByTitle(filteredJobs, req.params.title)
                         .then((response) => {
                             res.send(response);
+                            
                         });
                         
                     }
@@ -753,8 +819,11 @@ app.get("/find/:title&:category&:distance&:username",(req,res) => {
                     if(jobs){
                         const filteredJobs = [];
                         jobs.forEach((job) => {
-                            if(job.username !== req.params.username){
-                                filteredJobs.push(job);
+                            if(job.username !== req.params.username && job.scheduled !== true && job.completed !== true){
+                                if(filterOutPending(job, req.params.username) === false){
+                                    filteredJobs.push(job);
+                                }
+                                
                             }
                         
                         })

@@ -1,5 +1,5 @@
 
-import { AppBar, makeStyles, Toolbar, TextField, Box, FormControl, InputLabel, Select, MenuItem, Typography, Slider, Button } from "@material-ui/core";
+import { AppBar, makeStyles, Toolbar, TextField, Box, FormControl, InputLabel, Select, MenuItem, Typography, Slider, Button, Paper } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { useContext, useState } from "react";
 import theme from "../theme";
@@ -7,6 +7,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import UserContext from "../userContext";
 import axios from "axios";
 import MyJobCard from "../components/myJobCard";
+import grey from "@material-ui/core/colors/grey";
 
 
 const dotenv = require('dotenv');
@@ -18,7 +19,10 @@ dotenv.config();
 const useStyles = makeStyles({
 
        searchToolbarStyle: {
-           backgroundColor: theme.palette.secondary.light
+           backgroundColor: theme.palette.secondary.light,
+           width: "100%",
+           
+           
        },
 
        searchIconStyle: {
@@ -30,6 +34,35 @@ const useStyles = makeStyles({
 
        formControl: {
            minWidth: 120
+           
+       },
+       sliderWrap: {
+           width: "70%",
+           [theme.breakpoints.down('md')] : {
+               width: "100%"
+           }
+       },
+
+       searchWrap: {
+           display: "flex",
+           alignItems: "center",
+           justifyContent: "space-around",
+           margin: theme.spacing(4),
+           [theme.breakpoints.down('md')] : {
+               flexDirection: "column",
+               alignItems: "flex-start"
+           }
+       },
+
+       sliderContainer: {
+           display: "flex",
+           flexDirection: "column",
+           alignItems: "center",
+           color : grey[700]
+       },
+
+       categorySelect: {
+           marginBottom: theme.spacing(2)
        }
     }
     )
@@ -226,22 +259,23 @@ function Find(props){
             
             <Grid container item xs={12}>
                 
-                <AppBar position="relative" >
-                <Toolbar className={classes.searchToolbarStyle} >
+                
+                <Paper elevation={2} className={classes.searchToolbarStyle} >
                     <form noValidate onSubmit={handleSearchSubmit}>
-                    <Grid container direction="column" xs={12}>
+                    
                         
-                            <Grid item xs={12}>
-                                <Box mt={2} mb={1}>
-                                    <TextField onChange={handleSearchChange} name="title" color="secondary" fullWidth="true" id="standard-basic" size="medium" placeholder="Search by title"></TextField>
-                                </Box>
-                            </Grid>
+                            
+                                <Box className={classes.searchWrap}>
+                                <TextField onChange={handleSearchChange} name="title" color="secondary" id="standard-basic" size="medium" placeholder="Search by title"></TextField>
+                                
+                            
 
-                            <Grid item>
-                                <Box pb={2}>
+                            
+                                
                                 <FormControl className={classes.formControl}>
                                     <InputLabel  color="secondary">Category</InputLabel>
                                         <Select
+                                        className={classes.categorySelect}
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
                                         value={category}
@@ -261,35 +295,33 @@ function Find(props){
                                             <MenuItem value={"Plumbing"}>Plumbing</MenuItem>
                                         </Select>
                                 </FormControl>
+                                
+                            
+                       
+
+                                <Box className={classes.sliderContainer}>
+                                    <Typography gutterBottom >Maximum distance in km (If set to 0 it will display all distances)</Typography>
+                                    <Box className={classes.sliderWrap}>
+                                    <Slider value={sliderVal}  name="distance" onChange={updateRange} color={"secondary"} valueLabelDisplay="auto" aria-label="pretto slider"  />
+                                    </Box>
                                 </Box>
                             
-                        </Grid>
+                            
 
-                        
-                        <Grid item> <Typography gutterBottom >Maximum distance in km (If set to 0 it will display all distances)</Typography></Grid>
-                        <Box mb={2}>
-                        <Grid container item direction="row" justify="space-evenly">
-                            <Grid item xs={12} sm={4}>
-                                
-                                <Slider value={sliderVal}  name="distance" onChange={updateRange} color={"secondary"} valueLabelDisplay="auto" aria-label="pretto slider"  />
-
-                            </Grid>
-                            <Grid item xs={0} sm={4}>
-
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
+                            
+                            
 
                                 <Button type="submit" variant="contained" color="primary" endIcon={<SearchIcon/>}>Search</Button>
-                            </Grid>
                             
                             
-                        </Grid>
-                        </Box>
+                            
+                       
+                        
                     
-                    </Grid>
+                        </Box>
                     </form>
-                </Toolbar>
-                </AppBar>
+                </Paper>
+                
                 
             </Grid>
 

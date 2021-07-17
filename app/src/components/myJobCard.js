@@ -46,7 +46,7 @@ function MyJobCard(props){
                 [theme.breakpoints.down('md')] :{
                     width: "100%"
                 },
-                height: "200px"
+                height: "300px"
 
             },
             imgStyle: {

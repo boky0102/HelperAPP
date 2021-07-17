@@ -259,6 +259,8 @@ function App (){
 
     function handleLogOut(event){
         cookies.remove('token');
+        cookies.remove('userCityX');
+        cookies.remove('userCityY');
         setAuthentication(false);
     }
 
